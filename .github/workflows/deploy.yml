@@ -32,6 +32,9 @@ jobs:
       - name: Publicar
         run: dotnet publish ProgramaPaso.csproj -c Release -o release
 
+      - name: Ajustar base href para Pages
+        run: sed -i 's|<base href="/" />|<base href="/ProgramaPaso/" />|' release/wwwroot/index.html
+
       - name: SPA fallback (404.html)
         run: cp release/wwwroot/index.html release/wwwroot/404.html
 
