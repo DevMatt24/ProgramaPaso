@@ -17,6 +17,7 @@
 else if (_result is null)
 {
     var q = _quiz[_index];
+    var ok = _marks[_index] == true;
 
     <div class="screen @(_streak >= 3 ? "hot" : "")">
         <header class="q-head">
@@ -32,40 +33,107 @@ else if (_result is null)
                 <button class="mute" @onclick="ToggleMute" aria-label="@(_muted ? "Activar sonido" : "Silenciar")">@(_muted ? "🔇" : "🔊")</button>
             </div>
             <span class="chip">Nivel @_level · @q.Topic</span>
+            @if (q.Type != "choice")
+            {
+                <span class="chip kind">@(q.Type == "fill" ? "Completar" : "Ordenar")</span>
+            }
             <h2 class="prompt" @key="_index">@q.Prompt</h2>
         </header>
 
         <div class="q-body" @key="_index">
-            @if (!string.IsNullOrWhiteSpace(q.Code))
+            @switch (q.Type)
             {
-                <pre class="code">@q.Code</pre>
-            }
-
-            <div class="options">
-                @for (int i = 0; i < _order.Length; i++)
+                case "fill":
                 {
-                    var original = _order[i];
-                    <button class="@OptionClass(original)" disabled="@_answered" @onclick="() => Choose(original)">
-                        <span class="letter">@((char)('A' + i))</span>
-                        <span>@q.Options[original]</span>
-                    </button>
+                    var parts = q.Code.Split("___");
+                    var size = Math.Max(4, q.Answers.Max(a => a.Length) + 2);
+                    var inputClass = "fill-input" + (_answered ? (ok ? " ok" : " bad") : "");
+
+                    if (parts.Length == 2)
+                    {
+                        <pre class="code">@parts[0]<input class="@inputClass" @bind="_text" @bind:event="oninput" @onkeydown="OnKey" @ref="_input" disabled="@_answered" size="@size" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Tu respuesta" />@parts[1]</pre>
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrWhiteSpace(q.Code))
+                        {
+                            <pre class="code">@q.Code</pre>
+                        }
+                        <input class="@inputClass standalone" @bind="_text" @bind:event="oninput" @onkeydown="OnKey" @ref="_input" disabled="@_answered" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Escribí tu respuesta" aria-label="Tu respuesta" />
+                    }
+                    break;
                 }
-            </div>
+                case "order":
+                {
+                    <div class="order-label">Tu código</div>
+                    <div class="build @(_answered ? (ok ? "right" : "wrong") : "")">
+                        @if (_picked.Count == 0)
+                        {
+                            <p class="hint">Tocá las líneas de abajo en el orden correcto</p>
+                        }
+                        @for (int p = 0; p < _picked.Count; p++)
+                        {
+                            var pos = p;
+                            <button class="line placed" disabled="@_answered" @onclick="() => Unpick(pos)">
+                                <span class="no">@(p + 1)</span><code>@q.Lines[_picked[p]]</code>
+                            </button>
+                        }
+                    </div>
+
+                    <div class="order-label">Líneas disponibles</div>
+                    <div class="pool">
+                        @foreach (var idx in _lineOrder)
+                        {
+                            if (_picked.Contains(idx)) { continue; }
+                            var li = idx;
+                            <button class="line" disabled="@_answered" @onclick="() => Pick(li)"><code>@q.Lines[li]</code></button>
+                        }
+                    </div>
+                    break;
+                }
+                default:
+                {
+                    if (!string.IsNullOrWhiteSpace(q.Code))
+                    {
+                        <pre class="code">@q.Code</pre>
+                    }
+                    <div class="options">
+                        @for (int i = 0; i < _order.Length; i++)
+                        {
+                            var original = _order[i];
+                            <button class="@OptionClass(original)" disabled="@_answered" @onclick="() => Choose(original)">
+                                <span class="letter">@((char)('A' + i))</span>
+                                <span>@q.Options[original]</span>
+                            </button>
+                        }
+                    </div>
+                    break;
+                }
+            }
 
             @if (_answered)
             {
-                <div class="feedback @(_pick == q.Correct ? "good" : "miss")" @ref="_feedback" tabindex="-1">
+                <div class="feedback @(ok ? "good" : "miss")" @ref="_feedback" tabindex="-1">
                     <strong>@_praise</strong>
+                    @if (!ok && q.Type == "fill")
+                    {
+                        <p>Respuesta correcta: <code class="inline">@q.CorrectText</code></p>
+                    }
+                    @if (!ok && q.Type == "order")
+                    {
+                        <pre class="code small">@q.CorrectText</pre>
+                    }
                     <p>@q.Explanation</p>
-                    <pre class="code small">@q.Example</pre>
+                    @if (!string.IsNullOrWhiteSpace(q.Example))
+                    {
+                        <pre class="code small">@q.Example</pre>
+                    }
                 </div>
             }
         </div>
 
         <footer class="q-foot">
-            <button class="cta" disabled="@(!_answered)" @onclick="Next">
-                @(_answered ? (_index + 1 < _quiz.Count ? "Siguiente" : "Ver mi resultado") : "Elegí una respuesta")
-            </button>
+            <button class="cta" disabled="@CtaDisabled(q)" @onclick="OnCta">@CtaText(q)</button>
             <div class="live">
                 <span class="dot @(_streak > 0 ? "on" : "")"></span>
                 @(_streak > 0 ? $"Racha de {_streak}" : "Sin racha todavía")
@@ -102,14 +170,29 @@ else
                     <article class="review">
                         <span class="chip dark">@m.Question.Topic</span>
                         <h4>@m.Question.Prompt</h4>
-                        @if (!string.IsNullOrWhiteSpace(m.Question.Code))
+
+                        @if (m.Question.Type == "order")
                         {
-                            <pre class="code small">@m.Question.Code</pre>
+                            <p class="wrong-line">Tu orden:</p>
+                            <pre class="code small">@m.Given</pre>
+                            <p class="right-line">Orden correcto:</p>
+                            <pre class="code small">@m.Question.CorrectText</pre>
                         }
-                        <p class="wrong-line">Elegiste: @m.Question.Options[m.Selected]</p>
-                        <p class="right-line">Correcta: @m.Question.Options[m.Question.Correct]</p>
+                        else
+                        {
+                            if (!string.IsNullOrWhiteSpace(m.Question.Code))
+                            {
+                                <pre class="code small">@m.Question.Code</pre>
+                            }
+                            <p class="wrong-line">@(m.Question.Type == "fill" ? "Escribiste" : "Elegiste"): @m.Given</p>
+                            <p class="right-line">Correcta: @m.Question.CorrectText</p>
+                        }
+
                         <p>@m.Question.Explanation</p>
-                        <pre class="code small">@m.Question.Example</pre>
+                        @if (!string.IsNullOrWhiteSpace(m.Question.Example))
+                        {
+                            <pre class="code small">@m.Question.Example</pre>
+                        }
                     </article>
                 }
             }
@@ -139,14 +222,17 @@ else
 
     private readonly Random _rng = new();
     private List<Question>? _quiz;
-    private int[] _selected = Array.Empty<int>();
+    private AnswerResult?[] _answers = Array.Empty<AnswerResult?>();
     private bool?[] _marks = Array.Empty<bool?>();
-    private int[] _order = Array.Empty<int>();
+    private int[] _order = Array.Empty<int>();       // choice: orden mezclado de opciones
+    private int[] _lineOrder = Array.Empty<int>();   // order: orden mezclado de líneas
+    private readonly List<int> _picked = new();      // order: líneas elegidas por el usuario
+    private string _text = "";                       // fill: texto escrito
     private int _level, _index, _pick, _streak, _bestStreak;
-    private bool _answered, _scrollToFeedback, _muted;
+    private bool _answered, _scrollToFeedback, _focusInput, _muted;
     private string _praise = "";
     private QuizResult? _result;
-    private ElementReference _feedback;
+    private ElementReference _feedback, _input;
 
     private static readonly string[] Praises = { "¡Eso es!", "Muy bien.", "Exacto.", "Bien visto." };
     private static readonly string[] StreakPraises = { "¡Tres seguidas!", "Estás en racha.", "Esto ya fluye." };
@@ -170,11 +256,15 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Lleva la vista a la explicación cuando el usuario responde
         if (_scrollToFeedback)
         {
             _scrollToFeedback = false;
             try { await _feedback.FocusAsync(); } catch { }
+        }
+        else if (_focusInput)
+        {
+            _focusInput = false;
+            try { await _input.FocusAsync(); } catch { }
         }
     }
 
@@ -182,31 +272,63 @@ else
     {
         var pool = await Bank.GetLevelAsync(_level);
         _quiz = Engine.BuildQuiz(pool, Math.Min(8, pool.Count));
-        _selected = new int[_quiz.Count];
+        _answers = new AnswerResult?[_quiz.Count];
         _marks = new bool?[_quiz.Count];
         _index = 0; _streak = 0; _bestStreak = 0;
         _result = null;
         PrepareQuestion();
     }
 
-    // Mezcla el orden de las opciones para que no se memorice la posición
     private void PrepareQuestion()
     {
+        var q = _quiz![_index];
         _answered = false;
-        _order = Enumerable.Range(0, _quiz![_index].Options.Count).OrderBy(_ => _rng.Next()).ToArray();
+        _text = "";
+        _picked.Clear();
+
+        // Mezcla opciones/líneas para que no se memorice la posición
+        _order = Enumerable.Range(0, q.Options.Count).OrderBy(_ => _rng.Next()).ToArray();
+
+        var lines = Enumerable.Range(0, q.Lines.Count).ToArray();
+        for (int tries = 0; tries < 10; tries++)
+        {
+            lines = lines.OrderBy(_ => _rng.Next()).ToArray();
+            if (lines.Length < 2 || !lines.SequenceEqual(Enumerable.Range(0, lines.Length))) break;
+        }
+        _lineOrder = lines;
+
+        _focusInput = q.Type == "fill";
     }
+
+    // ---------- Respuestas ----------
 
     private async Task Choose(int original)
     {
         if (_answered) return;
         var q = _quiz![_index];
         _pick = original;
-        _selected[_index] = original;
+        await Resolve(q, q.Options[original], original == q.Correct);
+    }
+
+    private async Task CheckFill()
+    {
+        var q = _quiz![_index];
+        await Resolve(q, _text.Trim(), QuizEngine.CheckText(q, _text));
+    }
+
+    private async Task CheckOrder()
+    {
+        var q = _quiz![_index];
+        var given = _picked.Select(i => q.Lines[i]).ToList();
+        await Resolve(q, string.Join("\n", given), given.SequenceEqual(q.Lines));
+    }
+
+    private async Task Resolve(Question q, string given, bool ok)
+    {
         _answered = true;
         _scrollToFeedback = true;
-
-        var ok = original == q.Correct;
         _marks[_index] = ok;
+        _answers[_index] = new AnswerResult(q, given, ok);
 
         if (ok)
         {
@@ -224,6 +346,48 @@ else
         }
     }
 
+    private async Task Pick(int lineIndex)
+    {
+        if (_answered) return;
+        _picked.Add(lineIndex);
+        await Sound.PlayAsync("tap");
+    }
+
+    private async Task Unpick(int position)
+    {
+        if (_answered || position >= _picked.Count) return;
+        _picked.RemoveAt(position);
+        await Sound.PlayAsync("tap");
+    }
+
+    private async Task OnKey(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !_answered && !string.IsNullOrWhiteSpace(_text)) await CheckFill();
+    }
+
+    // ---------- Botón principal ----------
+
+    private bool CtaDisabled(Question q) => q.Type switch
+    {
+        "fill" => !_answered && string.IsNullOrWhiteSpace(_text),
+        "order" => !_answered && _picked.Count < q.Lines.Count,
+        _ => !_answered
+    };
+
+    private string CtaText(Question q)
+    {
+        if (_answered) return _index + 1 < _quiz!.Count ? "Siguiente" : "Ver mi resultado";
+        return q.Type == "choice" ? "Elegí una respuesta" : "Comprobar";
+    }
+
+    private async Task OnCta()
+    {
+        var q = _quiz![_index];
+        if (_answered) { await Next(); return; }
+        if (q.Type == "fill") await CheckFill();
+        else if (q.Type == "order") await CheckOrder();
+    }
+
     private async Task Next()
     {
         if (!_answered) return;
@@ -235,7 +399,7 @@ else
             return;
         }
 
-        _result = Engine.Evaluate(_quiz, _selected);
+        _result = new QuizResult(_answers.Select(a => a!).ToList());
         await Progress.SaveBestAsync(_level, _result.Score);
         await Sound.PlayAsync(_result.Passed(ProgressService.PassMark) ? "win" : "lose");
     }

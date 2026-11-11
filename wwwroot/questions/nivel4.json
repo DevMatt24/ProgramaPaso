@@ -1,0 +1,160 @@
+[
+  {
+    "id": "cnt-001", "topic": "Contadores", "level": 4,
+    "prompt": "¿Qué es un contador?",
+    "options": ["Una variable que guarda texto", "Una variable que aumenta en una cantidad fija cada vez que ocurre algo", "Una constante que no cambia"],
+    "correct": 1,
+    "explanation": "Un contador responde a «¿cuántas veces pasó esto?». Casi siempre arranca en 0 y suma 1 cada vez.",
+    "example": "int contador = 0;\ncontador++;   // 1\ncontador++;   // 2"
+  },
+  {
+    "id": "acu-001", "topic": "Acumuladores", "level": 4,
+    "prompt": "¿Qué diferencia hay entre un contador y un acumulador?",
+    "options": ["El contador suma una cantidad fija; el acumulador suma valores que cambian", "No hay ninguna diferencia", "El acumulador solo se usa con strings"],
+    "correct": 0,
+    "explanation": "El contador cuenta ocurrencias (+1). El acumulador junta valores distintos, por ejemplo precios o notas.",
+    "example": "cantidad++;        // contador\ntotal += precio;   // acumulador"
+  },
+  {
+    "id": "ban-001", "topic": "Banderas", "level": 4,
+    "prompt": "¿Qué es una bandera (flag)?",
+    "options": ["Un tipo de bucle", "Una variable bool que recuerda si algo ocurrió o no", "Un comentario especial"],
+    "correct": 1,
+    "explanation": "Una bandera arranca en false y se pone en true cuando pasa lo que te interesa. Después la consultás con un if.",
+    "example": "bool encontrado = false;\nif (x == 5)\n    encontrado = true;"
+  },
+  {
+    "id": "ini-001", "topic": "Acumuladores", "level": 4,
+    "prompt": "¿Con qué valor se inicializa un acumulador de sumas?",
+    "options": ["En 1", "En 0", "En -1"],
+    "correct": 1,
+    "explanation": "0 es el valor neutro de la suma. Si arrancás en 1, el total saldría 1 de más.",
+    "example": "int total = 0;\ntotal += 5;   // 5\ntotal += 3;   // 8"
+  },
+  {
+    "id": "cnt-002", "topic": "Contadores", "level": 4,
+    "prompt": "¿Cuánto vale pares al terminar?",
+    "code": "int pares = 0;\nfor (int i = 1; i <= 6; i++)\n{\n    if (i % 2 == 0)\n        pares++;\n}",
+    "options": ["2", "3", "6"],
+    "correct": 1,
+    "explanation": "Solo suma cuando i es par: 2, 4 y 6. Son tres veces.",
+    "example": "i = 2 -> pares = 1\ni = 4 -> pares = 2\ni = 6 -> pares = 3"
+  },
+  {
+    "id": "acu-002", "topic": "Acumuladores", "level": 4,
+    "prompt": "¿Cuánto vale total al terminar?",
+    "code": "int total = 0;\nfor (int i = 1; i <= 3; i++)\n    total += i * 2;",
+    "options": ["6", "18", "12"],
+    "correct": 2,
+    "explanation": "En cada vuelta se acumula i * 2: 2 + 4 + 6 = 12.",
+    "example": "i = 1 -> total = 2\ni = 2 -> total = 6\ni = 3 -> total = 12"
+  },
+  {
+    "id": "ban-002", "topic": "Banderas", "level": 4,
+    "prompt": "¿Cuánto vale encontrado al terminar?",
+    "code": "bool encontrado = false;\nfor (int i = 1; i <= 5; i++)\n{\n    if (i == 7)\n        encontrado = true;\n}",
+    "options": ["true", "false"],
+    "correct": 1,
+    "explanation": "i nunca llega a valer 7, así que el if jamás se cumple y la bandera se queda como empezó: false.",
+    "example": "if (!encontrado)\n    Console.WriteLine(\"No estaba\");"
+  },
+  {
+    "id": "val-001", "topic": "Validación", "level": 4,
+    "prompt": "¿Para qué sirve validar un dato antes de usarlo?",
+    "options": ["Para hacer el programa más lento", "Para asegurarte de que el valor sea correcto y evitar errores", "Para convertir todo a texto"],
+    "correct": 1,
+    "explanation": "Los usuarios escriben cosas inesperadas: vacío, negativos, fuera de rango. Validar evita que el programa falle o dé resultados absurdos.",
+    "example": "if (string.IsNullOrWhiteSpace(texto))\n    Console.WriteLine(\"ENTRADA INVALIDA\");"
+  },
+  {
+    "id": "val-002", "topic": "Validación", "level": 4,
+    "prompt": "¿Qué valores permiten que este bucle termine?",
+    "code": "int nota = -1;\nwhile (nota < 0 || nota > 10)\n{\n    nota = int.Parse(Console.ReadLine());\n}",
+    "options": ["De 1 a 9", "De 0 a 10, ambos incluidos", "Solo el 10"],
+    "correct": 1,
+    "explanation": "El bucle repite mientras la nota esté fuera de rango (menor que 0 o mayor que 10). Termina cuando está entre 0 y 10 inclusive.",
+    "example": "nota = 7;    // sale\nnota = 11;   // vuelve a pedir"
+  },
+  {
+    "id": "fil-001", "topic": "Contadores", "type": "fill", "level": 4,
+    "prompt": "Completá el hueco para sumar 1 al contador.",
+    "code": "int contador = 0;\nif (numero > 10)\n    contador___;",
+    "answers": ["++", "+=1", "=contador+1", "=1+contador"],
+    "explanation": "Hay varias formas válidas de sumar 1: contador++, contador += 1 o contador = contador + 1.",
+    "example": "contador++;\ncontador += 1;\ncontador = contador + 1;"
+  },
+  {
+    "id": "fil-002", "topic": "Acumuladores", "type": "fill", "level": 4,
+    "prompt": "Completá la línea para acumular el precio en total.",
+    "code": "int total = 0;\nfor (int i = 0; i < 3; i++)\n{\n    total ___ precio;\n}",
+    "answers": ["+=", "=total+"],
+    "explanation": "El acumulador se actualiza con su propio valor más el nuevo: total += precio (o total = total + precio).",
+    "example": "total += precio;\ntotal = total + precio;"
+  },
+  {
+    "id": "fil-003", "topic": "Banderas", "type": "fill", "level": 4,
+    "prompt": "Completá para marcar que el usuario escribió «salir».",
+    "code": "bool salio = false;\nif (texto == \"salir\")\n    salio = ___;",
+    "answers": ["true"],
+    "explanation": "La bandera cambia de false a true cuando ocurre el evento. En C# true se escribe en minúsculas.",
+    "example": "bool salio = false;\nsalio = true;"
+  },
+  {
+    "id": "fil-004", "topic": "Contadores", "type": "fill", "level": 4,
+    "prompt": "Escribí lo que imprime este código.",
+    "code": "int cont = 0;\nfor (int i = 0; i < 5; i++)\n    cont++;\nConsole.WriteLine(cont);",
+    "answers": ["5"],
+    "explanation": "El for da 5 vueltas (i = 0, 1, 2, 3, 4) y en cada una el contador sube 1. Al final vale 5.",
+    "example": "i = 0 -> cont = 1\ni = 1 -> cont = 2\n...\ni = 4 -> cont = 5"
+  },
+  {
+    "id": "fil-005", "topic": "Acumuladores", "type": "fill", "level": 4,
+    "prompt": "Para calcular un producto, ¿con qué valor arranca el acumulador?",
+    "code": "int producto = ___;\nfor (int i = 1; i <= 4; i++)\n    producto *= i;",
+    "answers": ["1"],
+    "explanation": "1 es el neutro de la multiplicación. Si arrancara en 0, todo el producto daría 0.",
+    "example": "producto = 1 * 1 * 2 * 3 * 4   // 24"
+  },
+  {
+    "id": "ord-001", "topic": "Acumuladores", "type": "order", "level": 4,
+    "prompt": "Ordená las líneas para sumar los números del 1 al 5 e imprimir el total.",
+    "lines": [
+      "int suma = 0;",
+      "for (int i = 1; i <= 5; i++)",
+      "{",
+      "    suma += i;",
+      "}",
+      "Console.WriteLine(suma);"
+    ],
+    "explanation": "Primero se declara el acumulador en 0, después el bucle lo va llenando y recién al final se imprime el resultado.",
+    "example": ""
+  },
+  {
+    "id": "ord-002", "topic": "Contadores", "type": "order", "level": 4,
+    "prompt": "Ordená las líneas para contar cuántos números pares hay del 1 al 10.",
+    "lines": [
+      "int pares = 0;",
+      "for (int i = 1; i <= 10; i++)",
+      "{",
+      "    if (i % 2 == 0)",
+      "        pares++;",
+      "}",
+      "Console.WriteLine(pares);"
+    ],
+    "explanation": "El contador se crea antes del bucle. Dentro, el if filtra los pares y solo entonces se suma 1. El resultado se imprime al terminar.",
+    "example": ""
+  },
+  {
+    "id": "ord-003", "topic": "Validación", "type": "order", "level": 4,
+    "prompt": "Ordená las líneas para pedir una edad hasta que no sea negativa.",
+    "lines": [
+      "int edad = -1;",
+      "while (edad < 0)",
+      "{",
+      "    edad = int.Parse(Console.ReadLine());",
+      "}"
+    ],
+    "explanation": "La variable arranca con un valor inválido para que el while entre. Dentro se vuelve a pedir el dato hasta que cumpla la condición.",
+    "example": ""
+  }
+]

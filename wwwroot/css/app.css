@@ -214,3 +214,48 @@ a { color: inherit; }
     display: block; width: 100%; margin-top: .8rem; background: none; border: 0; cursor: pointer;
     font: inherit; font-size: .95rem; color: var(--muted); text-decoration: underline;
 }
+
+/* ---------- Ejercicios de completar y ordenar ---------- */
+.chip.kind { background: var(--frame); color: #ffe9cf; margin-left: .35rem; }
+
+.fill-input {
+    font-family: var(--mono); font-size: inherit; color: #fff;
+    background: rgba(255, 255, 255, .14); border: 0; border-bottom: 2px solid var(--honey);
+    border-radius: 6px; padding: 0 .35rem; margin: 0 .1rem; outline: none;
+}
+.fill-input:focus { background: rgba(255, 255, 255, .22); }
+.fill-input.ok { border-color: var(--right); background: rgba(47, 179, 107, .35); }
+.fill-input.bad { border-color: var(--wrong); background: rgba(224, 57, 79, .35); animation: shake .35s ease; }
+.fill-input.standalone {
+    display: block; width: 100%; font-size: 1rem; color: var(--ink);
+    background: var(--pill); border: 2px solid var(--pill-line); border-radius: 14px; padding: .75rem .9rem; margin-bottom: 1rem;
+}
+.fill-input.standalone:focus { border-color: var(--honey); background: #fff; }
+.fill-input.standalone.ok { border-color: var(--right); background: var(--right-bg); }
+.fill-input.standalone.bad { border-color: var(--wrong); background: var(--wrong-bg); }
+.fill-input::placeholder { color: var(--muted); }
+
+code.inline { font-family: var(--mono); background: rgba(58, 31, 18, .08); padding: .05rem .4rem; border-radius: 6px; }
+
+.order-label { font-size: .78rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin: .2rem 0 .45rem; }
+.build {
+    min-height: 3.4rem; display: grid; gap: .35rem; align-content: start;
+    background: #2b1618; border-radius: 12px; padding: .5rem; margin-bottom: 1.1rem; border: 2px solid transparent;
+}
+.build .hint { margin: .5rem .6rem; color: #c9a98f; font-size: .9rem; }
+.build.right { border-color: var(--right); }
+.build.wrong { border-color: var(--wrong); }
+
+.line {
+    display: flex; align-items: center; gap: .6rem; width: 100%; text-align: left; cursor: pointer;
+    border-radius: 10px; padding: .45rem .7rem; font-family: var(--mono); font-size: .85rem; line-height: 1.4;
+    transition: transform .12s ease, border-color .15s ease;
+}
+.line code { font-family: inherit; white-space: pre; }
+.pool { display: grid; gap: .4rem; }
+.pool .line { background: var(--pill); color: var(--ink); border: 2px solid var(--pill-line); }
+.pool .line:hover { border-color: var(--honey); transform: translateX(3px); }
+.line.placed { background: rgba(255, 233, 207, .1); color: #ffd9a8; border: 0; animation: pop .25s ease; }
+.line.placed:hover:not(:disabled) { background: rgba(255, 233, 207, .2); }
+.line .no { flex: none; width: 1.3rem; height: 1.3rem; display: grid; place-items: center; border-radius: 6px; background: rgba(255, 233, 207, .15); font-size: .72rem; color: #c9a98f; }
+.line:disabled { cursor: default; }
