@@ -1,40 +1,138 @@
 [
   {
-    "id": "var-001",
-    "topic": "variables",
-    "level": 1,
+    "id": "var-001", "topic": "Variables", "level": 1,
     "prompt": "¿Qué es una variable?",
-    "options": [
-      "Un espacio de memoria con nombre que guarda un valor",
-      "Un tipo de bucle",
-      "Un comentario del código"
-    ],
+    "options": ["Un espacio de memoria con nombre que guarda un valor", "Un tipo de bucle", "Un comentario del código"],
     "correct": 0,
-    "explanation": "Una variable es como un cajón con nombre donde guardás un dato que puede cambiar.",
+    "explanation": "Una variable es como un cajón con etiqueta: guarda un dato y podés cambiarlo después.",
     "example": "int edad = 20;\nedad = 21;"
   },
   {
-    "id": "var-002",
-    "topic": "variables",
-    "level": 1,
-    "prompt": "¿Cuál es la diferencia entre una variable y una constante?",
-    "options": [
-      "La constante no puede cambiar su valor después de declararse",
-      "La variable solo guarda números",
-      "No hay ninguna diferencia"
-    ],
-    "correct": 0,
-    "explanation": "Con const el valor queda fijo; con una variable normal podés reasignarlo.",
+    "id": "var-002", "topic": "Variables", "level": 1,
+    "prompt": "¿Qué línea declara correctamente una variable entera?",
+    "options": ["edad int = 20;", "int edad = 20;", "int = edad 20;"],
+    "correct": 1,
+    "explanation": "El orden es: tipo, nombre, igual, valor y punto y coma.",
+    "example": "int edad = 20;\nstring nombre = \"Ana\";"
+  },
+  {
+    "id": "var-003", "topic": "Variables", "level": 1,
+    "prompt": "¿Cuál es un nombre de variable válido en C#?",
+    "options": ["1total", "mi total", "total1"],
+    "correct": 2,
+    "explanation": "Un nombre no puede empezar con número ni llevar espacios. Sí puede contener números después de la primera letra.",
+    "example": "int total1 = 5;\nint miTotal = 8;"
+  },
+  {
+    "id": "var-004", "topic": "Variables", "level": 1,
+    "prompt": "¿Cuánto vale a al terminar este código?",
+    "code": "int a = 5;\na = a + 2;",
+    "options": ["5", "7", "2"],
+    "correct": 1,
+    "explanation": "Primero se calcula a + 2 con el valor actual (5) y el resultado se guarda de nuevo en a.",
+    "example": "int a = 5;\na = a + 2;   // a ahora vale 7"
+  },
+  {
+    "id": "con-001", "topic": "Constantes", "level": 1,
+    "prompt": "¿Qué diferencia hay entre una variable y una constante?",
+    "options": ["La variable solo guarda números", "No hay ninguna diferencia", "La constante no puede cambiar su valor después de declararse"],
+    "correct": 2,
+    "explanation": "Con const el valor queda fijo. Con una variable normal podés reasignarlo.",
     "example": "const double PI = 3.14;\nint contador = 0;\ncontador = 5;"
   },
   {
-    "id": "tip-001",
-    "topic": "tipos",
-    "level": 1,
-    "prompt": "¿Qué tipo de dato usarías para guardar el texto \"Hola\"?",
+    "id": "con-002", "topic": "Constantes", "level": 1,
+    "prompt": "¿Qué pasa al compilar este código?",
+    "code": "const int MAX = 10;\nMAX = 20;",
+    "options": ["MAX pasa a valer 20", "Error de compilación: una constante no se puede reasignar", "MAX vale 30"],
+    "correct": 1,
+    "explanation": "Una constante se asigna una sola vez, al declararla. Intentar cambiarla es un error.",
+    "example": "const int MAX = 10;\nint x = MAX + 5;   // leer está permitido"
+  },
+  {
+    "id": "tip-001", "topic": "Tipos de datos", "level": 1,
+    "prompt": "¿Qué tipo usarías para guardar el texto \"Hola\"?",
     "options": ["string", "int", "bool"],
     "correct": 0,
-    "explanation": "string guarda cadenas de texto. int es para enteros y bool para verdadero/falso.",
+    "explanation": "string guarda cadenas de texto. int es para enteros y bool para verdadero o falso.",
     "example": "string saludo = \"Hola\";"
+  },
+  {
+    "id": "tip-002", "topic": "Tipos de datos", "level": 1,
+    "prompt": "¿Qué tipo usarías para guardar el precio 3.14?",
+    "options": ["int", "string", "double"],
+    "correct": 2,
+    "explanation": "int solo guarda enteros, sin decimales. double guarda números con coma decimal.",
+    "example": "double precio = 3.14;\nint cantidad = 3;"
+  },
+  {
+    "id": "tip-003", "topic": "Tipos de datos", "level": 1,
+    "prompt": "¿Qué valores puede guardar un bool?",
+    "options": ["Cualquier número", "true y false", "Texto de hasta 10 letras"],
+    "correct": 1,
+    "explanation": "Un bool representa verdadero o falso. Se usa mucho para banderas y condiciones.",
+    "example": "bool aprobado = true;\nbool terminado = false;"
+  },
+  {
+    "id": "tip-004", "topic": "Tipos de datos", "level": 1,
+    "prompt": "¿Cuánto vale x?",
+    "code": "int x = 7 / 2;",
+    "options": ["3", "3.5", "4"],
+    "correct": 0,
+    "explanation": "Si dividís dos enteros, C# devuelve un entero y descarta los decimales. Es la división entera.",
+    "example": "int a = 7 / 2;        // 3\ndouble b = 7 / 2.0;   // 3.5"
+  },
+  {
+    "id": "ope-001", "topic": "Operadores", "level": 1,
+    "prompt": "¿Cuánto vale r? (el operador % da el resto de la división)",
+    "code": "int r = 10 % 3;",
+    "options": ["3", "0", "1"],
+    "correct": 2,
+    "explanation": "10 dividido 3 da 3 y sobra 1. Ese resto es el resultado de %.",
+    "example": "int par = 8 % 2;     // 0, es par\nint resto = 10 % 3;  // 1"
+  },
+  {
+    "id": "ope-002", "topic": "Operadores", "level": 1,
+    "prompt": "¿Qué hace el operador == ?",
+    "options": ["Asigna un valor a una variable", "Compara dos valores y da true o false", "Declara una constante"],
+    "correct": 1,
+    "explanation": "= asigna y == compara. Confundirlos es uno de los errores más comunes al empezar.",
+    "example": "int a = 5;               // asigna\nbool igual = (a == 5);   // true"
+  },
+  {
+    "id": "exp-001", "topic": "Expresiones", "level": 1,
+    "prompt": "¿Cuánto vale r?",
+    "code": "int r = 2 + 3 * 4;",
+    "options": ["20", "14", "24"],
+    "correct": 1,
+    "explanation": "La multiplicación se resuelve antes que la suma: 3 * 4 = 12 y luego 2 + 12 = 14. Con paréntesis cambiás el orden.",
+    "example": "int a = 2 + 3 * 4;     // 14\nint b = (2 + 3) * 4;   // 20"
+  },
+  {
+    "id": "exp-002", "topic": "Expresiones", "level": 1,
+    "prompt": "¿Cuánto vale puntos?",
+    "code": "int puntos = 10;\npuntos += 5;",
+    "options": ["5", "105", "15"],
+    "correct": 2,
+    "explanation": "+= suma y guarda en la misma variable. Es lo mismo que puntos = puntos + 5.",
+    "example": "int puntos = 10;\npuntos += 5;   // 15\npuntos++;      // 16"
+  },
+  {
+    "id": "exp-003", "topic": "Expresiones", "level": 1,
+    "prompt": "¿Qué guarda b?",
+    "code": "string a = \"Hola\";\nstring b = a + \" mundo\";",
+    "options": ["Hola mundo", "Holamundo", "Error de compilación"],
+    "correct": 0,
+    "explanation": "Con strings, + une los textos (concatenar). El espacio sale de \" mundo\".",
+    "example": "string nombre = \"Ana\";\nstring saludo = \"Hola \" + nombre;"
+  },
+  {
+    "id": "exp-004", "topic": "Expresiones", "level": 1,
+    "prompt": "¿Qué resultado da esta expresión?",
+    "code": "string r = \"5\" + \"3\";",
+    "options": ["\"8\"", "Error de compilación", "\"53\""],
+    "correct": 2,
+    "explanation": "Entre comillas son textos, no números. El + los une en lugar de sumarlos.",
+    "example": "int suma = 5 + 3;          // 8\nstring union = \"5\" + \"3\";  // \"53\""
   }
 ]

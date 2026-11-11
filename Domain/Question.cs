@@ -6,6 +6,7 @@ public class Question
     public string Topic { get; set; } = "";
     public int Level { get; set; }
     public string Prompt { get; set; } = "";
+    public string Code { get; set; } = "";          // NUEVO: fragmento de código opcional
     public List<string> Options { get; set; } = new();
     public int Correct { get; set; }
     public string Explanation { get; set; } = "";

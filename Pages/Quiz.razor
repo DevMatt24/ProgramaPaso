@@ -4,68 +4,191 @@
 @inject QuestionBank Bank
 @inject QuizEngine Engine
 
-<h2>Nivel 1</h2>
+<PageTitle>Nivel 1 · ProgramaPaso</PageTitle>
 
 @if (_quiz is null)
 {
-    <p>Cargando...</p>
+    <section class="stage"><p class="muted">Preparando tu nivel…</p></section>
 }
 else if (_result is null)
 {
     var q = _quiz[_index];
-    <p><b>Pregunta @(_index + 1) de @_quiz.Count</b></p>
-    <p>@q.Prompt</p>
 
-    @for (int i = 0; i < q.Options.Count; i++)
-    {
-        var option = i;
-        <div>
-            <button class="btn btn-outline-primary mb-2" @onclick="() => Answer(option)">
-                @q.Options[i]
-            </button>
-        </div>
-    }
+    <section class="stage @(_streak >= 3 ? "hot" : "")">
+        <header class="hud">
+            <div class="steps" role="progressbar" aria-valuemin="0" aria-valuemax="@_quiz.Count" aria-valuenow="@_index">
+                @for (int i = 0; i < _quiz.Count; i++)
+                {
+                    var cls = _marks[i] == true ? "step ok" : _marks[i] == false ? "step bad" : i == _index ? "step now" : "step";
+                    <span class="@cls"></span>
+                }
+            </div>
+            @if (_streak > 0)
+            {
+                <div class="streak" @key="_streak">Racha de @_streak</div>
+            }
+        </header>
+
+        <article class="card" @key="_index">
+            <span class="chip">@q.Topic</span>
+            <h2 class="prompt">@q.Prompt</h2>
+
+            @if (!string.IsNullOrWhiteSpace(q.Code))
+            {
+                <pre class="code">@q.Code</pre>
+            }
+
+            <div class="options">
+                @for (int i = 0; i < _order.Length; i++)
+                {
+                    var original = _order[i];
+                    <button class="@OptionClass(original)" disabled="@_answered" @onclick="() => Choose(original)">
+                        <span class="letter">@((char)('A' + i))</span>
+                        <span>@q.Options[original]</span>
+                    </button>
+                }
+            </div>
+
+            @if (_answered)
+            {
+                <div class="feedback @(_pick == q.Correct ? "good" : "miss")">
+                    <strong>@_praise</strong>
+                    <p>@q.Explanation</p>
+                    <pre class="code small">@q.Example</pre>
+                    <button class="cta" @onclick="Next" autofocus>
+                        @(_index + 1 < _quiz.Count ? "Siguiente" : "Ver mi resultado")
+                    </button>
+                </div>
+            }
+        </article>
+    </section>
 }
 else
 {
-    <h3>Puntaje: @_result.Score / 100</h3>
-    <p>@(_result.Passed() ? "¡Pasás al siguiente nivel!" : "Repasá y volvé a intentar.")</p>
+    var correct = _result.Answers.Count(a => a.IsCorrect);
 
-    @foreach (var m in _result.Mistakes)
-    {
-        <div class="card p-3 mb-3">
-            <b>@m.Question.Prompt</b>
-            <p class="text-danger mb-1">Tu respuesta: @m.Question.Options[m.Selected]</p>
-            <p class="text-success mb-1">Correcta: @m.Question.Options[m.Question.Correct]</p>
-            <p>@m.Question.Explanation</p>
-            <pre>@m.Question.Example</pre>
+    <section class="stage @(_result.Passed() ? "hot" : "")">
+        <div class="result">
+            <div class="ring" style="--p:@(_result.Score)">
+                <div class="ring-inner"><span class="big">@_result.Score</span><span class="muted">de 100</span></div>
+            </div>
+            <h2>@ResultTitle()</h2>
+            <p class="muted">@correct de @_result.Answers.Count correctas · mejor racha: @_bestStreak</p>
+
+            <div class="actions">
+                <button class="cta" @onclick="Restart">Intentar con otras preguntas</button>
+                @if (_result.Passed())
+                {
+                    <button class="ghost" disabled>Nivel 2: muy pronto</button>
+                }
+            </div>
         </div>
-    }
 
-    <button class="btn btn-primary" @onclick="Restart">Reintentar</button>
+        @if (_result.Mistakes.Any())
+        {
+            <h3 class="review-title">Repasemos lo que se escapó</h3>
+            @foreach (var m in _result.Mistakes)
+            {
+                <article class="card review">
+                    <span class="chip">@m.Question.Topic</span>
+                    <h4>@m.Question.Prompt</h4>
+                    @if (!string.IsNullOrWhiteSpace(m.Question.Code))
+                    {
+                        <pre class="code small">@m.Question.Code</pre>
+                    }
+                    <p class="wrong-line">Elegiste: @m.Question.Options[m.Selected]</p>
+                    <p class="right-line">Correcta: @m.Question.Options[m.Question.Correct]</p>
+                    <p>@m.Question.Explanation</p>
+                    <pre class="code small">@m.Question.Example</pre>
+                </article>
+            }
+        }
+        else
+        {
+            <p class="muted center">Sin errores. No hay nada que repasar.</p>
+        }
+    </section>
 }
 
 @code {
+    private readonly Random _rng = new();
     private List<Question>? _quiz;
     private int[] _selected = Array.Empty<int>();
-    private int _index;
+    private bool?[] _marks = Array.Empty<bool?>();
+    private int[] _order = Array.Empty<int>();
+    private int _index, _pick, _streak, _bestStreak;
+    private bool _answered;
+    private string _praise = "";
     private QuizResult? _result;
+
+    private static readonly string[] Praises = { "¡Eso es!", "Muy bien.", "Exacto.", "Bien visto." };
+    private static readonly string[] StreakPraises = { "¡Tres seguidas!", "Estás en racha.", "Esto ya fluye." };
 
     protected override async Task OnInitializedAsync() => await Restart();
 
     private async Task Restart()
     {
         var pool = await Bank.GetLevelAsync(1);
-        _quiz = Engine.BuildQuiz(pool, 5);
+        _quiz = Engine.BuildQuiz(pool, Math.Min(8, pool.Count));
         _selected = new int[_quiz.Count];
-        _index = 0;
+        _marks = new bool?[_quiz.Count];
+        _index = 0; _streak = 0; _bestStreak = 0;
         _result = null;
+        PrepareQuestion();
     }
 
-    private void Answer(int option)
+    // Mezcla el orden de las opciones para que no se memorice la posición
+    private void PrepareQuestion()
     {
-        _selected[_index] = option;
-        if (_index + 1 < _quiz!.Count) _index++;
+        _answered = false;
+        _order = Enumerable.Range(0, _quiz![_index].Options.Count).OrderBy(_ => _rng.Next()).ToArray();
+    }
+
+    private void Choose(int original)
+    {
+        if (_answered) return;
+        var q = _quiz![_index];
+        _pick = original;
+        _selected[_index] = original;
+        _answered = true;
+
+        var ok = original == q.Correct;
+        _marks[_index] = ok;
+
+        if (ok)
+        {
+            _streak++;
+            _bestStreak = Math.Max(_bestStreak, _streak);
+            var list = _streak >= 3 ? StreakPraises : Praises;
+            _praise = list[_rng.Next(list.Length)];
+        }
+        else
+        {
+            _streak = 0;
+            _praise = "Casi. Mirá por qué:";
+        }
+    }
+
+    private void Next()
+    {
+        if (_index + 1 < _quiz!.Count) { _index++; PrepareQuestion(); }
         else _result = Engine.Evaluate(_quiz, _selected);
     }
+
+    private string OptionClass(int original)
+    {
+        if (!_answered) return "opt";
+        var q = _quiz![_index];
+        if (original == q.Correct) return "opt right";
+        if (original == _pick) return "opt wrong";
+        return "opt dim";
+    }
+
+    private string ResultTitle() => _result!.Score switch
+    {
+        >= 90 => "Dominás el nivel 1",
+        >= 70 => "Nivel 1 superado",
+        >= 40 => "Vas por buen camino",
+        _ => "Un repaso más y lo sacás"
+    };
 }
