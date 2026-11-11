@@ -8,31 +8,29 @@
 
 @if (_quiz is null)
 {
-    <section class="stage"><p class="muted">Preparando tu nivel…</p></section>
+    <div class="screen"><p class="muted loading">Preparando tu nivel…</p></div>
 }
 else if (_result is null)
 {
     var q = _quiz[_index];
 
-    <section class="stage @(_streak >= 3 ? "hot" : "")">
-        <header class="hud">
-            <div class="steps" role="progressbar" aria-valuemin="0" aria-valuemax="@_quiz.Count" aria-valuenow="@_index">
-                @for (int i = 0; i < _quiz.Count; i++)
-                {
-                    var cls = _marks[i] == true ? "step ok" : _marks[i] == false ? "step bad" : i == _index ? "step now" : "step";
-                    <span class="@cls"></span>
-                }
+    <div class="screen @(_streak >= 3 ? "hot" : "")">
+        <header class="q-head">
+            <div class="bar">
+                <a class="back" href="" aria-label="Volver al inicio">‹</a>
+                <div class="steps" role="progressbar" aria-valuemin="0" aria-valuemax="@_quiz.Count" aria-valuenow="@_index">
+                    @for (int i = 0; i < _quiz.Count; i++)
+                    {
+                        var cls = _marks[i] == true ? "step ok" : _marks[i] == false ? "step bad" : i == _index ? "step now" : "step";
+                        <span class="@cls"></span>
+                    }
+                </div>
             </div>
-            @if (_streak > 0)
-            {
-                <div class="streak" @key="_streak">Racha de @_streak</div>
-            }
+            <span class="chip">@q.Topic</span>
+            <h2 class="prompt" @key="_index">@q.Prompt</h2>
         </header>
 
-        <article class="card" @key="_index">
-            <span class="chip">@q.Topic</span>
-            <h2 class="prompt">@q.Prompt</h2>
-
+        <div class="q-body" @key="_index">
             @if (!string.IsNullOrWhiteSpace(q.Code))
             {
                 <pre class="code">@q.Code</pre>
@@ -51,63 +49,75 @@ else if (_result is null)
 
             @if (_answered)
             {
-                <div class="feedback @(_pick == q.Correct ? "good" : "miss")">
+                <div class="feedback @(_pick == q.Correct ? "good" : "miss")" @ref="_feedback" tabindex="-1">
                     <strong>@_praise</strong>
                     <p>@q.Explanation</p>
                     <pre class="code small">@q.Example</pre>
-                    <button class="cta" @onclick="Next" autofocus>
-                        @(_index + 1 < _quiz.Count ? "Siguiente" : "Ver mi resultado")
-                    </button>
                 </div>
             }
-        </article>
-    </section>
+        </div>
+
+        <footer class="q-foot">
+            <button class="cta" disabled="@(!_answered)" @onclick="Next">
+                @(_answered ? (_index + 1 < _quiz.Count ? "Siguiente" : "Ver mi resultado") : "Elegí una respuesta")
+            </button>
+            <div class="live">
+                <span class="dot @(_streak > 0 ? "on" : "")"></span>
+                @(_streak > 0 ? $"Racha de {_streak}" : "Sin racha todavía")
+            </div>
+        </footer>
+    </div>
 }
 else
 {
     var correct = _result.Answers.Count(a => a.IsCorrect);
+    var passed = _result.Passed();
 
-    <section class="stage @(_result.Passed() ? "hot" : "")">
-        <div class="result">
+    <div class="screen @(passed ? "hot" : "")">
+        <header class="q-head">
+            <div class="bar">
+                <a class="back" href="" aria-label="Volver al inicio">‹</a>
+                <span class="brand">Resultado</span>
+            </div>
+            <h2 class="prompt">@ResultTitle()</h2>
+            <p class="sub">@correct de @_result.Answers.Count correctas · mejor racha: @_bestStreak</p>
+        </header>
+
+        <div class="q-body">
             <div class="ring" style="--p:@(_result.Score)">
                 <div class="ring-inner"><span class="big">@_result.Score</span><span class="muted">de 100</span></div>
             </div>
-            <h2>@ResultTitle()</h2>
-            <p class="muted">@correct de @_result.Answers.Count correctas · mejor racha: @_bestStreak</p>
 
-            <div class="actions">
-                <button class="cta" @onclick="Restart">Intentar con otras preguntas</button>
-                @if (_result.Passed())
+            @if (_result.Mistakes.Any())
+            {
+                <h3 class="review-title">Repasemos lo que se escapó</h3>
+                @foreach (var m in _result.Mistakes)
                 {
-                    <button class="ghost" disabled>Nivel 2: muy pronto</button>
+                    <article class="review">
+                        <span class="chip dark">@m.Question.Topic</span>
+                        <h4>@m.Question.Prompt</h4>
+                        @if (!string.IsNullOrWhiteSpace(m.Question.Code))
+                        {
+                            <pre class="code small">@m.Question.Code</pre>
+                        }
+                        <p class="wrong-line">Elegiste: @m.Question.Options[m.Selected]</p>
+                        <p class="right-line">Correcta: @m.Question.Options[m.Question.Correct]</p>
+                        <p>@m.Question.Explanation</p>
+                        <pre class="code small">@m.Question.Example</pre>
+                    </article>
                 }
-            </div>
+            }
+            else
+            {
+                <p class="muted center">Sin errores. No hay nada que repasar.</p>
+            }
         </div>
 
-        @if (_result.Mistakes.Any())
-        {
-            <h3 class="review-title">Repasemos lo que se escapó</h3>
-            @foreach (var m in _result.Mistakes)
-            {
-                <article class="card review">
-                    <span class="chip">@m.Question.Topic</span>
-                    <h4>@m.Question.Prompt</h4>
-                    @if (!string.IsNullOrWhiteSpace(m.Question.Code))
-                    {
-                        <pre class="code small">@m.Question.Code</pre>
-                    }
-                    <p class="wrong-line">Elegiste: @m.Question.Options[m.Selected]</p>
-                    <p class="right-line">Correcta: @m.Question.Options[m.Question.Correct]</p>
-                    <p>@m.Question.Explanation</p>
-                    <pre class="code small">@m.Question.Example</pre>
-                </article>
-            }
-        }
-        else
-        {
-            <p class="muted center">Sin errores. No hay nada que repasar.</p>
-        }
-    </section>
+        <footer class="q-foot">
+            <button class="cta" @onclick="Restart">Intentar con otras preguntas</button>
+            <div class="live">@(passed ? "Nivel 2: muy pronto" : "Necesitás 70 para pasar de nivel")</div>
+        </footer>
+    </div>
 }
 
 @code {
@@ -117,14 +127,25 @@ else
     private bool?[] _marks = Array.Empty<bool?>();
     private int[] _order = Array.Empty<int>();
     private int _index, _pick, _streak, _bestStreak;
-    private bool _answered;
+    private bool _answered, _scrollToFeedback;
     private string _praise = "";
     private QuizResult? _result;
+    private ElementReference _feedback;
 
     private static readonly string[] Praises = { "¡Eso es!", "Muy bien.", "Exacto.", "Bien visto." };
     private static readonly string[] StreakPraises = { "¡Tres seguidas!", "Estás en racha.", "Esto ya fluye." };
 
     protected override async Task OnInitializedAsync() => await Restart();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Lleva la vista a la explicación cuando el usuario responde
+        if (_scrollToFeedback)
+        {
+            _scrollToFeedback = false;
+            try { await _feedback.FocusAsync(); } catch { }
+        }
+    }
 
     private async Task Restart()
     {
@@ -151,6 +172,7 @@ else
         _pick = original;
         _selected[_index] = original;
         _answered = true;
+        _scrollToFeedback = true;
 
         var ok = original == q.Correct;
         _marks[_index] = ok;
@@ -171,6 +193,7 @@ else
 
     private void Next()
     {
+        if (!_answered) return;
         if (_index + 1 < _quiz!.Count) { _index++; PrepareQuestion(); }
         else _result = Engine.Evaluate(_quiz, _selected);
     }

@@ -1,16 +1,11 @@
 @inherits LayoutComponentBase
 
-<header class="topbar">
-    <a class="brand" href="">ProgramaPaso</a>
-    <nav>
-        <NavLink href="" Match="NavLinkMatch.All">Inicio</NavLink>
-        <NavLink href="quiz">Quiz</NavLink>
-    </nav>
-</header>
-
-<main>
-    @Body
-</main>
+<div class="page">
+    <div class="phone">
+        <div class="notch" aria-hidden="true"></div>
+        @Body
+    </div>
+</div>
 
 <div id="blazor-error-ui" data-nosnippet>
     Ocurrió un error inesperado.
