@@ -1,0 +1,141 @@
+[
+  {
+    "id": "bcl-001", "topic": "Bucles", "level": 3,
+    "prompt": "¿Para qué sirve un bucle?",
+    "options": ["Para repetir un bloque de código", "Para declarar una constante", "Para elegir entre dos caminos"],
+    "correct": 0,
+    "explanation": "Un bucle ejecuta el mismo bloque varias veces, sin que tengas que copiarlo y pegarlo.",
+    "example": "for (int i = 0; i < 3; i++)\n{\n    Console.WriteLine(\"Hola\");\n}"
+  },
+  {
+    "id": "bcl-002", "topic": "for", "level": 3,
+    "prompt": "¿Qué tres partes tiene un for entre paréntesis?",
+    "options": ["Nombre, tipo y valor", "Inicialización, condición y actualización", "Solo una condición"],
+    "correct": 1,
+    "explanation": "Primero se inicializa el contador, luego se evalúa la condición en cada vuelta y al final de cada vuelta se actualiza.",
+    "example": "for (int i = 0; i < 5; i++)\n//   inicio    condición  actualización"
+  },
+  {
+    "id": "bcl-003", "topic": "for", "level": 3,
+    "prompt": "¿Qué imprime este código?",
+    "code": "for (int i = 0; i < 3; i++)\n    Console.WriteLine(i);",
+    "options": ["1, 2 y 3", "0, 1 y 2", "0, 1, 2 y 3"],
+    "correct": 1,
+    "explanation": "i arranca en 0 y el bucle sigue mientras i < 3. Cuando i llega a 3 la condición falla y el 3 no se imprime.",
+    "example": "i = 0 -> imprime 0\ni = 1 -> imprime 1\ni = 2 -> imprime 2\ni = 3 -> corta"
+  },
+  {
+    "id": "bcl-004", "topic": "for", "level": 3,
+    "prompt": "¿Cuántas veces se ejecuta el cuerpo de este for?",
+    "code": "for (int i = 1; i <= 5; i++)\n{\n    // cuerpo\n}",
+    "options": ["4", "6", "5"],
+    "correct": 2,
+    "explanation": "i vale 1, 2, 3, 4 y 5. Con <= el 5 también entra, y recién con 6 se corta.",
+    "example": "for (int i = 1; i <= 5; i++)   // 5 vueltas\nfor (int i = 0; i < 5; i++)    // también 5 vueltas"
+  },
+  {
+    "id": "bcl-005", "topic": "Acumuladores", "level": 3,
+    "prompt": "¿Cuánto vale suma al terminar?",
+    "code": "int suma = 0;\nfor (int i = 1; i <= 4; i++)\n    suma += i;",
+    "options": ["4", "10", "24"],
+    "correct": 1,
+    "explanation": "En cada vuelta se acumula i: 1 + 2 + 3 + 4 = 10. A una variable que va sumando así se la llama acumulador.",
+    "example": "suma = 0\nsuma = 0 + 1 = 1\nsuma = 1 + 2 = 3\nsuma = 3 + 3 = 6\nsuma = 6 + 4 = 10"
+  },
+  {
+    "id": "bcl-006", "topic": "for", "level": 3,
+    "prompt": "¿Qué hace i++?",
+    "options": ["Multiplica i por 2", "Compara i con 1", "Le suma 1 a i"],
+    "correct": 2,
+    "explanation": "i++ es la forma corta de i = i + 1. Su opuesto es i-- que resta 1.",
+    "example": "int i = 5;\ni++;   // 6\ni--;   // 5"
+  },
+  {
+    "id": "bcl-007", "topic": "for", "level": 3,
+    "prompt": "¿Qué imprime este código?",
+    "code": "for (int i = 0; i < 10; i += 2)\n    Console.Write(i + \" \");",
+    "options": ["0 2 4 6 8", "2 4 6 8 10", "0 2 4 6 8 10"],
+    "correct": 0,
+    "explanation": "El contador sube de a 2: 0, 2, 4, 6, 8. Con 10 la condición i < 10 ya es falsa.",
+    "example": "i += 2;   // equivale a i = i + 2"
+  },
+  {
+    "id": "bcl-008", "topic": "for", "level": 3,
+    "prompt": "¿Qué imprime este código?",
+    "code": "for (int i = 3; i >= 1; i--)\n    Console.Write(i + \" \");",
+    "options": ["1 2 3", "3 2 1", "3 2 1 0"],
+    "correct": 1,
+    "explanation": "Cuenta hacia atrás: empieza en 3 y resta 1 mientras i >= 1. Cuando i llega a 0, se corta.",
+    "example": "for (int i = 3; i >= 1; i--)   // 3, 2, 1"
+  },
+  {
+    "id": "whl-001", "topic": "while", "level": 3,
+    "prompt": "¿Cuándo se detiene un while?",
+    "options": ["Después de 10 vueltas", "Cuando su condición pasa a ser false", "Cuando encuentra un if"],
+    "correct": 1,
+    "explanation": "El while repite su bloque mientras la condición sea true. Apenas da false, sale del bucle.",
+    "example": "while (n > 0)\n{\n    n--;\n}"
+  },
+  {
+    "id": "whl-002", "topic": "while", "level": 3,
+    "prompt": "¿Qué imprime este código?",
+    "code": "int n = 3;\nwhile (n > 0)\n{\n    Console.WriteLine(n);\n    n--;\n}",
+    "options": ["3, 2, 1 y 0", "1, 2 y 3", "3, 2 y 1"],
+    "correct": 2,
+    "explanation": "Imprime n y luego lo baja en 1. Cuando n llega a 0, la condición n > 0 es falsa y el 0 no se imprime.",
+    "example": "n = 3 -> imprime 3, n pasa a 2\nn = 2 -> imprime 2, n pasa a 1\nn = 1 -> imprime 1, n pasa a 0"
+  },
+  {
+    "id": "whl-003", "topic": "while", "level": 3,
+    "prompt": "¿Qué problema tiene este código?",
+    "code": "int n = 1;\nwhile (n < 5)\n{\n    Console.WriteLine(n);\n}",
+    "options": ["No imprime nada", "Es un bucle infinito: n nunca cambia", "No compila"],
+    "correct": 1,
+    "explanation": "Dentro del bucle nada modifica n, así que n < 5 es siempre true. Falta algo como n++.",
+    "example": "while (n < 5)\n{\n    Console.WriteLine(n);\n    n++;   // ahora sí termina\n}"
+  },
+  {
+    "id": "whl-004", "topic": "while", "level": 3,
+    "prompt": "¿Cuántas veces se ejecuta el cuerpo de este while?",
+    "code": "int x = 10;\nwhile (x < 5)\n{\n    x++;\n}",
+    "options": ["Ninguna vez", "Una vez", "Cinco veces"],
+    "correct": 0,
+    "explanation": "El while evalúa la condición antes de entrar. Como 10 < 5 es false desde el principio, el cuerpo nunca corre.",
+    "example": "while (condicion)   // se evalúa primero\n{\n    ...\n}"
+  },
+  {
+    "id": "whl-005", "topic": "for vs while", "level": 3,
+    "prompt": "¿Cuál es la diferencia práctica entre for y while?",
+    "options": ["El for solo funciona con strings", "Con for sabés de antemano cuántas vueltas; con while repetís hasta que algo cambie", "while se ejecuta una sola vez"],
+    "correct": 1,
+    "explanation": "for es ideal cuando contás vueltas (del 1 al 10). while es ideal cuando no sabés cuántas serán, por ejemplo pedir un dato hasta que sea válido.",
+    "example": "for (int i = 1; i <= 10; i++) { ... }\nwhile (texto != \"salir\") { ... }"
+  },
+  {
+    "id": "bcl-009", "topic": "break y continue", "level": 3,
+    "prompt": "¿Qué imprime este código?",
+    "code": "for (int i = 1; i <= 10; i++)\n{\n    if (i == 3)\n        break;\n    Console.WriteLine(i);\n}",
+    "options": ["Del 1 al 10", "1, 2 y 3", "1 y 2"],
+    "correct": 2,
+    "explanation": "break corta el bucle de golpe. Cuando i vale 3 se sale antes de imprimirlo, así que solo se imprimen 1 y 2.",
+    "example": "break;      // sale del bucle\ncontinue;   // salta a la próxima vuelta"
+  },
+  {
+    "id": "bcl-010", "topic": "break y continue", "level": 3,
+    "prompt": "¿Qué imprime este código?",
+    "code": "for (int i = 1; i <= 4; i++)\n{\n    if (i == 2)\n        continue;\n    Console.WriteLine(i);\n}",
+    "options": ["1, 3 y 4", "1, 2, 3 y 4", "1 y 2"],
+    "correct": 0,
+    "explanation": "continue saltea el resto de esa vuelta y pasa a la siguiente. Cuando i vale 2 no se imprime, pero el bucle sigue.",
+    "example": "i = 1 -> imprime\ni = 2 -> continue (no imprime)\ni = 3 -> imprime\ni = 4 -> imprime"
+  },
+  {
+    "id": "whl-006", "topic": "Validación con while", "level": 3,
+    "prompt": "¿Qué hace este bucle?",
+    "code": "int edad = -1;\nwhile (edad < 0)\n{\n    edad = int.Parse(Console.ReadLine());\n}",
+    "options": ["Pide el dato una sola vez", "Pide el dato una y otra vez hasta que sea mayor o igual a 0", "Cuenta desde 0 hasta la edad"],
+    "correct": 1,
+    "explanation": "Es el patrón clásico de validación: arranca con un valor inválido y repite la pregunta hasta que el usuario ingrese algo correcto.",
+    "example": "string texto = \"\";\nwhile (texto != \"salir\")\n{\n    texto = Console.ReadLine();\n}"
+  }
+]
