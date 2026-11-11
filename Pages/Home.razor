@@ -1,4 +1,7 @@
 @page "/"
+@using ProgramaPaso.Domain
+@using ProgramaPaso.Services
+@inject ProgressService Progress
 
 <PageTitle>ProgramaPaso</PageTitle>
 
@@ -11,19 +14,63 @@
 
     <div class="q-body">
         <ol class="path">
-            <li class="open"><b>Variables, constantes, tipos y operadores</b><span>Disponible</span></li>
-            <li><b>Condicionales: if, else, switch</b><span>Pronto</span></li>
-            <li><b>Repetitivas: for y while</b><span>Pronto</span></li>
-            <li><b>Contadores, acumuladores y banderas</b><span>Pronto</span></li>
-            <li><b>Métodos</b><span>Pronto</span></li>
-            <li><b>Vectores</b><span>Pronto</span></li>
-            <li><b>Cadenas de caracteres</b><span>Pronto</span></li>
-            <li><b>Depurar código</b><span>Pronto</span></li>
-            <li><b>Integrador tipo parcial</b><span>Pronto</span></li>
+            @foreach (var l in Curriculum.Levels)
+            {
+                var best = _best.GetValueOrDefault(l.Number, -1);
+                var unlocked = l.Available && _unlocked.Contains(l.Number);
+                var cls = !l.Available ? "" : !unlocked ? "locked" : best >= ProgressService.PassMark ? "open done" : "open";
+
+                <li class="@cls">
+                    @if (unlocked)
+                    {
+                        <a class="row" href="quiz/@l.Number">
+                            <b>@l.Title</b>
+                            <span>@(best >= 0 ? $"Mejor: {best}" : "Disponible")</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <b>@l.Title</b>
+                            <span>@(l.Available ? "Bloqueado" : "Pronto")</span>
+                        </div>
+                    }
+                </li>
+            }
         </ol>
     </div>
 
     <footer class="q-foot">
-        <a class="cta" href="quiz">Empezar nivel 1</a>
+        <a class="cta" href="quiz/@_next">@_ctaText</a>
+        <div class="live">Para abrir un nivel, sacá @ProgressService.PassMark o más en el anterior</div>
     </footer>
 </div>
+
+@code {
+    private readonly Dictionary<int, int> _best = new();
+    private readonly HashSet<int> _unlocked = new();
+    private int _next = 1;
+    private string _ctaText = "Empezar nivel 1";
+
+    protected override async Task OnInitializedAsync()
+    {
+        int? firstPending = null;
+        int lastUnlocked = 1;
+
+        for (int n = 1; n <= Curriculum.AvailableLevels; n++)
+        {
+            _best[n] = await Progress.GetBestAsync(n);
+            if (await Progress.IsUnlockedAsync(n))
+            {
+                _unlocked.Add(n);
+                lastUnlocked = n;
+                if (firstPending is null && _best[n] < ProgressService.PassMark) firstPending = n;
+            }
+        }
+
+        _next = firstPending ?? lastUnlocked;
+        _ctaText = _best.GetValueOrDefault(_next, -1) >= 0
+            ? $"Continuar con el nivel {_next}"
+            : $"Empezar nivel {_next}";
+    }
+}

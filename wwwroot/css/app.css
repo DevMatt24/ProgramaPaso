@@ -196,3 +196,21 @@ a { color: inherit; }
     display: none; left: 0; padding: .6rem 1.25rem .7rem; position: fixed; width: 100%; z-index: 1000;
 }
 #blazor-error-ui .dismiss { cursor: pointer; position: absolute; right: .75rem; top: .5rem; }
+
+/* ---------- Niveles, sonido y botón secundario ---------- */
+.path li .row { display: flex; justify-content: space-between; gap: .8rem; align-items: baseline; width: 100%; color: inherit; text-decoration: none; }
+.path li a.row:hover b { text-decoration: underline; }
+.path li.done::before { background: var(--right); border-color: var(--right); box-shadow: 0 0 0 4px rgba(47, 179, 107, .2); }
+.path li.done span { color: #17804a; }
+.path li.locked { opacity: .65; }
+
+.mute {
+    flex: none; width: 1.9rem; height: 1.9rem; border: 0; border-radius: 50%;
+    background: rgba(58, 31, 18, .14); cursor: pointer; font-size: .95rem; line-height: 1; padding: 0;
+}
+.mute:hover { background: rgba(58, 31, 18, .26); }
+
+.link-btn {
+    display: block; width: 100%; margin-top: .8rem; background: none; border: 0; cursor: pointer;
+    font: inherit; font-size: .95rem; color: var(--muted); text-decoration: underline;
+}

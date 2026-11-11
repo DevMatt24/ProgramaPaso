@@ -11,4 +11,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped<ProgramaPaso.Services.QuestionBank>();
 builder.Services.AddScoped<ProgramaPaso.Domain.QuizEngine>();
 
+builder.Services.AddScoped<ProgramaPaso.Services.SoundService>();
+builder.Services.AddScoped<ProgramaPaso.Services.ProgressService>();
+
 await builder.Build().RunAsync();

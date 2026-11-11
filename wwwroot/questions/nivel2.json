@@ -1,0 +1,137 @@
+[
+  {
+    "id": "cnd-001", "topic": "if / else", "level": 2,
+    "prompt": "¿Para qué sirve un if?",
+    "options": ["Repite un bloque varias veces", "Ejecuta un bloque solo si la condición es verdadera", "Declara una variable"],
+    "correct": 1,
+    "explanation": "El if decide: si la condición da true, se ejecuta su bloque. Si da false, se lo saltea.",
+    "example": "if (edad >= 18)\n{\n    Console.WriteLine(\"Podés entrar\");\n}"
+  },
+  {
+    "id": "cnd-002", "topic": "if / else", "level": 2,
+    "prompt": "¿Qué imprime este código?",
+    "code": "int edad = 17;\nif (edad >= 18)\n    Console.WriteLine(\"Mayor\");\nelse\n    Console.WriteLine(\"Menor\");",
+    "options": ["Mayor", "Menor", "No imprime nada"],
+    "correct": 1,
+    "explanation": "17 >= 18 es false, así que se ejecuta el else.",
+    "example": "int edad = 17;\nbool esMayor = edad >= 18;   // false"
+  },
+  {
+    "id": "cnd-003", "topic": "if / else", "level": 2,
+    "prompt": "¿Qué línea compara correctamente x con 5?",
+    "options": ["if (x = 5)", "if (x := 5)", "if (x == 5)"],
+    "correct": 2,
+    "explanation": "= asigna y == compara. En C#, if (x = 5) ni siquiera compila.",
+    "example": "if (x == 5)\n{\n    Console.WriteLine(\"x vale 5\");\n}"
+  },
+  {
+    "id": "cnd-004", "topic": "if / else", "level": 2,
+    "prompt": "¿Cuándo se ejecuta el bloque else?",
+    "options": ["Cuando la condición del if es falsa", "Siempre, después del if", "Cuando la condición del if es verdadera"],
+    "correct": 0,
+    "explanation": "else es el camino alternativo: solo corre si el if no se cumplió.",
+    "example": "if (nota >= 6)\n    resultado = \"Aprobó\";\nelse\n    resultado = \"Desaprobó\";"
+  },
+  {
+    "id": "cnd-005", "topic": "if / else", "level": 2,
+    "prompt": "¿Cuánto vale n al final?",
+    "code": "int n = 10;\nif (n > 5)\n    n = n + 1;\nif (n > 10)\n    n = n + 1;",
+    "options": ["11", "10", "12"],
+    "correct": 2,
+    "explanation": "Son dos if independientes. El primero sube n a 11. Como 11 > 10, el segundo también se cumple y n llega a 12.",
+    "example": "int n = 10;\nn = n + 1;   // 11\nn = n + 1;   // 12"
+  },
+  {
+    "id": "cnd-006", "topic": "else if", "level": 2,
+    "prompt": "¿Qué imprime este código?",
+    "code": "int nota = 75;\nif (nota >= 90) Console.WriteLine(\"A\");\nelse if (nota >= 70) Console.WriteLine(\"B\");\nelse Console.WriteLine(\"C\");",
+    "options": ["A", "C", "B"],
+    "correct": 2,
+    "explanation": "Se evalúa de arriba hacia abajo y se ejecuta el primer caso verdadero. 75 no llega a 90, pero sí a 70.",
+    "example": "if (nota >= 90) ...\nelse if (nota >= 70) ...   // acá entra\nelse ..."
+  },
+  {
+    "id": "log-001", "topic": "Operador &&", "level": 2,
+    "prompt": "¿Cuándo da true la expresión A && B?",
+    "options": ["Si al menos una de las dos es true", "Solo si A y B son true", "Nunca"],
+    "correct": 1,
+    "explanation": "&& significa «y»: tienen que cumplirse las dos condiciones a la vez.",
+    "example": "bool ok = edad >= 18 && tieneEntrada;"
+  },
+  {
+    "id": "log-002", "topic": "Operador ||", "level": 2,
+    "prompt": "¿Cuándo da true la expresión A || B?",
+    "options": ["Si al menos una de las dos es true", "Solo si las dos son true", "Solo si las dos son false"],
+    "correct": 0,
+    "explanation": "|| significa «o»: alcanza con que se cumpla una de las dos.",
+    "example": "bool descuento = esJubilado || esEstudiante;"
+  },
+  {
+    "id": "log-003", "topic": "Condiciones compuestas", "level": 2,
+    "prompt": "¿Cuánto vale ok?",
+    "code": "int edad = 20;\nbool ok = edad >= 18 && edad <= 65;",
+    "options": ["false", "true", "Error de compilación"],
+    "correct": 1,
+    "explanation": "20 >= 18 es true y 20 <= 65 es true. Con && ambas se cumplen, así que el resultado es true.",
+    "example": "bool enRango = edad >= 18 && edad <= 65;"
+  },
+  {
+    "id": "log-004", "topic": "Condiciones compuestas", "level": 2,
+    "prompt": "¿Cuánto vale r?",
+    "code": "int x = 3;\nbool r = x < 0 || x > 10;",
+    "options": ["true", "false"],
+    "correct": 1,
+    "explanation": "3 < 0 es false y 3 > 10 es false. Con || hace falta que al menos una sea true, y ninguna lo es.",
+    "example": "bool fueraDeRango = x < 0 || x > 10;"
+  },
+  {
+    "id": "log-005", "topic": "Operador !", "level": 2,
+    "prompt": "¿Qué hace el operador ! delante de un bool?",
+    "options": ["Lo convierte en número", "Invierte su valor: true pasa a false y al revés", "Lo compara con cero"],
+    "correct": 1,
+    "explanation": "! es la negación. Sirve para preguntar por lo contrario de una condición.",
+    "example": "bool llueve = false;\nbool salgo = !llueve;   // true"
+  },
+  {
+    "id": "log-006", "topic": "Condiciones compuestas", "level": 2,
+    "prompt": "¿Qué condición verifica que n esté entre 1 y 10, incluyendo ambos extremos?",
+    "options": ["n >= 1 || n <= 10", "n >= 1 && n <= 10", "n > 1 && n < 10"],
+    "correct": 1,
+    "explanation": "Hacen falta las dos cosas a la vez, por eso &&. Con || casi cualquier número cumpliría. Y con > y < se excluirían el 1 y el 10.",
+    "example": "if (n >= 1 && n <= 10)\n    Console.WriteLine(\"Válido\");"
+  },
+  {
+    "id": "log-007", "topic": "Condiciones compuestas", "level": 2,
+    "prompt": "¿Qué imprime este código?",
+    "code": "int a = 4, b = 9;\nif (a > 5 || b > 5)\n    Console.WriteLine(\"Sí\");\nelse\n    Console.WriteLine(\"No\");",
+    "options": ["Sí", "No", "Sí y No"],
+    "correct": 0,
+    "explanation": "a > 5 es false, pero b > 5 es true. Con || alcanza con una verdadera, así que entra al if.",
+    "example": "if (a > 5 || b > 5)   // false || true -> true"
+  },
+  {
+    "id": "swi-001", "topic": "switch", "level": 2,
+    "prompt": "¿Qué imprime este código?",
+    "code": "int dia = 2;\nswitch (dia)\n{\n    case 1: Console.WriteLine(\"Lunes\"); break;\n    case 2: Console.WriteLine(\"Martes\"); break;\n    default: Console.WriteLine(\"Otro\"); break;\n}",
+    "options": ["Lunes", "Otro", "Martes"],
+    "correct": 2,
+    "explanation": "switch compara dia con cada case. Coincide con case 2, imprime «Martes» y el break sale del switch.",
+    "example": "switch (dia)\n{\n    case 2: ...; break;\n}"
+  },
+  {
+    "id": "swi-002", "topic": "switch", "level": 2,
+    "prompt": "¿Para qué sirve default en un switch?",
+    "options": ["Se ejecuta si ningún case coincide", "Se ejecuta siempre primero", "Define el valor inicial de la variable"],
+    "correct": 0,
+    "explanation": "default es el caso por defecto: cubre todo lo que no encaja con ningún case, como el else de un if.",
+    "example": "switch (opcion)\n{\n    case 1: ...; break;\n    default: Console.WriteLine(\"Opción inválida\"); break;\n}"
+  },
+  {
+    "id": "swi-003", "topic": "switch", "level": 2,
+    "prompt": "¿Qué pasa en C# si un case con código no termina en break?",
+    "options": ["Sigue ejecutando el siguiente case sin problema", "Error de compilación", "El programa se cierra solo"],
+    "correct": 1,
+    "explanation": "C# no permite «caer» al siguiente case por accidente. Cada case con código debe terminar en break (o return).",
+    "example": "case 1:\n    Console.WriteLine(\"Uno\");\n    break;   // obligatorio"
+  }
+]
