@@ -1,0 +1,154 @@
+[
+  {
+    "id": "met-001", "topic": "Métodos", "level": 5,
+    "prompt": "¿Qué es un método?",
+    "options": ["Un bloque de código con nombre que podés reutilizar", "Un tipo de variable", "Un comentario del programa"],
+    "correct": 0,
+    "explanation": "Un método agrupa instrucciones bajo un nombre. Lo escribís una vez y lo llamás cada vez que lo necesites.",
+    "example": "static void Saludar()\n{\n    Console.WriteLine(\"Hola\");\n}\n\nSaludar();"
+  },
+  {
+    "id": "met-002", "topic": "Parámetros", "level": 5,
+    "prompt": "¿Qué diferencia hay entre parámetro y argumento?",
+    "options": ["Son exactamente lo mismo", "El parámetro es lo que se declara en el método; el argumento es el valor que se pasa al llamarlo", "El argumento se declara dentro del método"],
+    "correct": 1,
+    "explanation": "El parámetro es el «hueco» de la declaración. El argumento es el valor concreto que ponés en ese hueco cuando llamás al método.",
+    "example": "static int Doble(int n)   // n es el parámetro\n{\n    return n * 2;\n}\n\nDoble(5);   // 5 es el argumento"
+  },
+  {
+    "id": "met-003", "topic": "Retorno", "level": 5,
+    "prompt": "¿Qué significa void en la declaración de un método?",
+    "options": ["Que el método devuelve un entero", "Que el método no devuelve ningún valor", "Que el método no recibe parámetros"],
+    "correct": 1,
+    "explanation": "void es «vacío»: el método hace algo (por ejemplo imprimir) pero no entrega un resultado.",
+    "example": "static void Mostrar(int x)\n{\n    Console.WriteLine(x);\n}"
+  },
+  {
+    "id": "met-004", "topic": "Retorno", "level": 5,
+    "prompt": "¿Qué hace la instrucción return?",
+    "options": ["Repite el método", "Declara una variable", "Devuelve un valor y termina el método"],
+    "correct": 2,
+    "explanation": "return entrega el resultado a quien llamó al método y corta la ejecución en ese punto: lo que esté después no se ejecuta.",
+    "example": "static int Cuadrado(int n)\n{\n    return n * n;\n}"
+  },
+  {
+    "id": "met-005", "topic": "Retorno", "level": 5,
+    "prompt": "¿Cuánto vale r?",
+    "code": "static int Doble(int n)\n{\n    return n * 2;\n}\n\nint r = Doble(4);",
+    "options": ["4", "8", "2"],
+    "correct": 1,
+    "explanation": "Se llama a Doble con 4: n vale 4, devuelve 4 * 2 = 8 y ese valor se guarda en r.",
+    "example": "Doble(4) -> 8\nint r = 8;"
+  },
+  {
+    "id": "met-006", "topic": "Ámbito", "level": 5,
+    "prompt": "¿Qué pasa al ejecutar este código?",
+    "code": "static void Mostrar()\n{\n    int x = 5;\n}\n\nMostrar();\nConsole.WriteLine(x);",
+    "options": ["Imprime 5", "Error de compilación: x solo existe dentro de Mostrar", "Imprime 0"],
+    "correct": 1,
+    "explanation": "x es una variable local: nace y muere dentro del método. Desde afuera ni siquiera existe.",
+    "example": "static void Mostrar()\n{\n    int x = 5;          // solo vive acá\n    Console.WriteLine(x);\n}"
+  },
+  {
+    "id": "met-007", "topic": "Ámbito", "level": 5,
+    "prompt": "¿Qué es el ámbito de una variable?",
+    "options": ["El tipo de dato que guarda", "La zona del código donde la variable existe y puede usarse", "El valor inicial que tiene"],
+    "correct": 1,
+    "explanation": "Una variable declarada dentro de un método o de un bloque { } solo se puede usar ahí adentro.",
+    "example": "for (int i = 0; i < 3; i++)\n{\n    int doble = i * 2;   // vive solo en este bloque\n}"
+  },
+  {
+    "id": "met-008", "topic": "Parámetros", "level": 5,
+    "prompt": "¿Cuánto vale a al final?",
+    "code": "static void Sumar(int n)\n{\n    n = n + 10;\n}\n\nint a = 5;\nSumar(a);",
+    "options": ["15", "5", "10"],
+    "correct": 1,
+    "explanation": "El método recibe una copia de a. Cambiar n adentro no modifica la variable original.",
+    "example": "a = 5\nSumar(a)  -> n = 5, luego n = 15 (solo la copia)\na sigue valiendo 5"
+  },
+  {
+    "id": "met-009", "topic": "Declaración", "level": 5,
+    "prompt": "¿Qué declaración corresponde a un método que recibe un string y devuelve un bool?",
+    "options": ["static string EsVacio(bool texto)", "static void EsVacio(string texto)", "static bool EsVacio(string texto)"],
+    "correct": 2,
+    "explanation": "El tipo antes del nombre es lo que devuelve (bool). Lo que va entre paréntesis es lo que recibe (string texto).",
+    "example": "static bool EsVacio(string texto)\n//     devuelve   nombre   recibe"
+  },
+  {
+    "id": "met-010", "topic": "Retorno", "level": 5,
+    "prompt": "¿Qué error tiene este método?",
+    "code": "static int Cuadrado(int n)\n{\n    int r = n * n;\n}",
+    "options": ["Sobra el parámetro n", "Falta devolver el valor con return", "El tipo int no existe"],
+    "correct": 1,
+    "explanation": "El método promete devolver un int pero nunca lo hace. Falta return r; al final.",
+    "example": "static int Cuadrado(int n)\n{\n    int r = n * n;\n    return r;\n}"
+  },
+  {
+    "id": "mfl-001", "topic": "Declaración", "type": "fill", "level": 5,
+    "prompt": "Completá el tipo de retorno para que el método devuelva un entero.",
+    "code": "static ___ Suma(int a, int b)\n{\n    return a + b;\n}",
+    "answers": ["int"],
+    "explanation": "a + b es un int, así que el método debe declararse como int.",
+    "example": "static int Suma(int a, int b)"
+  },
+  {
+    "id": "mfl-002", "topic": "Retorno", "type": "fill", "level": 5,
+    "prompt": "Completá la palabra que falta para devolver el resultado.",
+    "code": "static int Triple(int n)\n{\n    ___ n * 3;\n}",
+    "answers": ["return"],
+    "explanation": "return entrega el valor calculado a quien llamó al método.",
+    "example": "return n * 3;"
+  },
+  {
+    "id": "mfl-003", "topic": "Llamadas", "type": "fill", "level": 5,
+    "prompt": "Completá la llamada para guardar el resultado de sumar 2 y 3.",
+    "code": "static int Suma(int a, int b)\n{\n    return a + b;\n}\n\nint total = ___;",
+    "answers": ["Suma(2,3)"],
+    "explanation": "Se llama al método por su nombre y se le pasan los argumentos entre paréntesis, separados por coma.",
+    "example": "int total = Suma(2, 3);   // 5"
+  },
+  {
+    "id": "mfl-004", "topic": "Retorno", "type": "fill", "level": 5,
+    "prompt": "Escribí lo que imprime este código.",
+    "code": "static int Mayor(int a, int b)\n{\n    if (a > b)\n        return a;\n    return b;\n}\n\nConsole.WriteLine(Mayor(3, 8));",
+    "answers": ["8"],
+    "explanation": "3 > 8 es falso, así que no entra al if y llega al return b, que devuelve 8.",
+    "example": "Mayor(3, 8) -> 8"
+  },
+  {
+    "id": "mfl-005", "topic": "Declaración", "type": "fill", "level": 5,
+    "prompt": "Completá el tipo de retorno de un método que solo imprime y no devuelve nada.",
+    "code": "static ___ Saludar()\n{\n    Console.WriteLine(\"Hola\");\n}",
+    "answers": ["void"],
+    "explanation": "Cuando un método no devuelve ningún valor se declara void.",
+    "example": "static void Saludar()"
+  },
+  {
+    "id": "mor-001", "topic": "Declaración", "type": "order", "level": 5,
+    "prompt": "Ordená las líneas: primero se declara el método EsPar y después se lo llama.",
+    "lines": [
+      "static bool EsPar(int n)",
+      "{",
+      "    return n % 2 == 0;",
+      "}",
+      "bool r = EsPar(4);"
+    ],
+    "explanation": "La declaración tiene firma, llave de apertura, cuerpo con return y llave de cierre. La llamada va después y guarda el resultado en una variable.",
+    "example": ""
+  },
+  {
+    "id": "mor-002", "topic": "Métodos", "type": "order", "level": 5,
+    "prompt": "Ordená las líneas del método que suma los números del 1 hasta n.",
+    "lines": [
+      "static int SumarHasta(int n)",
+      "{",
+      "    int suma = 0;",
+      "    for (int i = 1; i <= n; i++)",
+      "        suma += i;",
+      "    return suma;",
+      "}"
+    ],
+    "explanation": "Primero la firma, después el acumulador en 0, el for que va sumando y al final el return con el resultado. Es el mismo patrón que usarás en el parcial.",
+    "example": ""
+  }
+]
