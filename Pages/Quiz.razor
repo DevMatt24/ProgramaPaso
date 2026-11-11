@@ -1,0 +1,71 @@
+@page "/quiz"
+@using ProgramaPaso.Domain
+@using ProgramaPaso.Services
+@inject QuestionBank Bank
+@inject QuizEngine Engine
+
+<h2>Nivel 1</h2>
+
+@if (_quiz is null)
+{
+    <p>Cargando...</p>
+}
+else if (_result is null)
+{
+    var q = _quiz[_index];
+    <p><b>Pregunta @(_index + 1) de @_quiz.Count</b></p>
+    <p>@q.Prompt</p>
+
+    @for (int i = 0; i < q.Options.Count; i++)
+    {
+        var option = i;
+        <div>
+            <button class="btn btn-outline-primary mb-2" @onclick="() => Answer(option)">
+                @q.Options[i]
+            </button>
+        </div>
+    }
+}
+else
+{
+    <h3>Puntaje: @_result.Score / 100</h3>
+    <p>@(_result.Passed() ? "¡Pasás al siguiente nivel!" : "Repasá y volvé a intentar.")</p>
+
+    @foreach (var m in _result.Mistakes)
+    {
+        <div class="card p-3 mb-3">
+            <b>@m.Question.Prompt</b>
+            <p class="text-danger mb-1">Tu respuesta: @m.Question.Options[m.Selected]</p>
+            <p class="text-success mb-1">Correcta: @m.Question.Options[m.Question.Correct]</p>
+            <p>@m.Question.Explanation</p>
+            <pre>@m.Question.Example</pre>
+        </div>
+    }
+
+    <button class="btn btn-primary" @onclick="Restart">Reintentar</button>
+}
+
+@code {
+    private List<Question>? _quiz;
+    private int[] _selected = Array.Empty<int>();
+    private int _index;
+    private QuizResult? _result;
+
+    protected override async Task OnInitializedAsync() => await Restart();
+
+    private async Task Restart()
+    {
+        var pool = await Bank.GetLevelAsync(1);
+        _quiz = Engine.BuildQuiz(pool, 5);
+        _selected = new int[_quiz.Count];
+        _index = 0;
+        _result = null;
+    }
+
+    private void Answer(int option)
+    {
+        _selected[_index] = option;
+        if (_index + 1 < _quiz!.Count) _index++;
+        else _result = Engine.Evaluate(_quiz, _selected);
+    }
+}

@@ -1,0 +1,40 @@
+[
+  {
+    "id": "var-001",
+    "topic": "variables",
+    "level": 1,
+    "prompt": "¿Qué es una variable?",
+    "options": [
+      "Un espacio de memoria con nombre que guarda un valor",
+      "Un tipo de bucle",
+      "Un comentario del código"
+    ],
+    "correct": 0,
+    "explanation": "Una variable es como un cajón con nombre donde guardás un dato que puede cambiar.",
+    "example": "int edad = 20;\nedad = 21;"
+  },
+  {
+    "id": "var-002",
+    "topic": "variables",
+    "level": 1,
+    "prompt": "¿Cuál es la diferencia entre una variable y una constante?",
+    "options": [
+      "La constante no puede cambiar su valor después de declararse",
+      "La variable solo guarda números",
+      "No hay ninguna diferencia"
+    ],
+    "correct": 0,
+    "explanation": "Con const el valor queda fijo; con una variable normal podés reasignarlo.",
+    "example": "const double PI = 3.14;\nint contador = 0;\ncontador = 5;"
+  },
+  {
+    "id": "tip-001",
+    "topic": "tipos",
+    "level": 1,
+    "prompt": "¿Qué tipo de dato usarías para guardar el texto \"Hola\"?",
+    "options": ["string", "int", "bool"],
+    "correct": 0,
+    "explanation": "string guarda cadenas de texto. int es para enteros y bool para verdadero/falso.",
+    "example": "string saludo = \"Hola\";"
+  }
+]
