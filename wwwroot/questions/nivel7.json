@@ -1,0 +1,155 @@
+[
+  {
+    "id": "str-001", "topic": "Trim", "level": 7,
+    "prompt": "¿Qué hace el método Trim()?",
+    "options": ["Quita los espacios del principio y del final del texto", "Pasa el texto a minúsculas", "Corta el texto en partes"],
+    "correct": 0,
+    "explanation": "Trim() elimina los espacios (y saltos de línea) que sobran en los extremos. Los espacios del medio no se tocan.",
+    "example": "string s = \"  Hola  \";\nstring t = s.Trim();   // \"Hola\""
+  },
+  {
+    "id": "str-003", "topic": "ToLower / ToUpper", "level": 7,
+    "prompt": "¿Qué devuelve \"Espada\".ToLower()?",
+    "options": ["\"ESPADA\"", "\"espada\"", "\"Espada\""],
+    "correct": 1,
+    "explanation": "ToLower() pasa todas las letras a minúscula y ToUpper() a mayúscula. Sirve para comparar sin importar cómo escribió el usuario.",
+    "example": "\"Espada\".ToLower()   // \"espada\"\n\"Espada\".ToUpper()   // \"ESPADA\""
+  },
+  {
+    "id": "str-004", "topic": "ToLower / ToUpper", "level": 7,
+    "prompt": "¿Qué imprime este código?",
+    "code": "string s = \"Hola\";\ns.ToUpper();\nConsole.WriteLine(s);",
+    "options": ["HOLA", "Hola", "Error de compilación"],
+    "correct": 1,
+    "explanation": "Los strings no se modifican: ToUpper() devuelve un texto nuevo y acá no se guardó en ninguna variable. Hay que asignarlo: s = s.ToUpper();",
+    "example": "s = s.ToUpper();   // ahora sí cambia"
+  },
+  {
+    "id": "str-005", "topic": "Contains", "level": 7,
+    "prompt": "¿Cuánto vale hay?",
+    "code": "bool hay = \"manzana roja\".Contains(\"roja\");",
+    "options": ["true", "false"],
+    "correct": 0,
+    "explanation": "Contains() responde si el texto incluye el fragmento buscado, en cualquier posición. Devuelve un bool.",
+    "example": "\"manzana roja\".Contains(\"roja\")   // true\n\"manzana roja\".Contains(\"azul\")   // false"
+  },
+  {
+    "id": "str-006", "topic": "IndexOf", "level": 7,
+    "prompt": "¿Cuánto vale pos?",
+    "code": "int pos = \"banana\".IndexOf(\"n\");",
+    "options": ["1", "3", "2"],
+    "correct": 2,
+    "explanation": "IndexOf devuelve la posición de la primera coincidencia, contando desde 0: b=0, a=1, n=2.",
+    "example": "\"banana\".IndexOf(\"n\")   // 2"
+  },
+  {
+    "id": "str-007", "topic": "IndexOf", "level": 7,
+    "prompt": "¿Qué devuelve IndexOf cuando el texto buscado no aparece?",
+    "code": "int pos = \"hola\".IndexOf(\"z\");",
+    "options": ["0", "Error en ejecución", "-1"],
+    "correct": 2,
+    "explanation": "-1 es la señal de «no encontrado». Por eso no se puede confundir con una posición válida, que siempre es 0 o mayor.",
+    "example": "if (texto.IndexOf(\"z\") == -1)\n    Console.WriteLine(\"No está\");"
+  },
+  {
+    "id": "str-008", "topic": "Substring", "level": 7,
+    "prompt": "¿Qué devuelve esta expresión?",
+    "code": "\"programa\".Substring(0, 4)",
+    "options": ["\"progr\"", "\"prog\"", "\"rogr\""],
+    "correct": 1,
+    "explanation": "Substring(inicio, largo): empieza en la posición 0 y toma 4 caracteres. El segundo número es la cantidad, no la posición final.",
+    "example": "\"programa\".Substring(0, 4)   // \"prog\"\n\"programa\".Substring(4, 4)   // \"rama\""
+  },
+  {
+    "id": "str-009", "topic": "Substring", "level": 7,
+    "prompt": "¿Qué devuelve esta expresión?",
+    "code": "\"hola mundo\".Substring(5)",
+    "options": ["\"mundo\"", "\" mundo\"", "\"hola\""],
+    "correct": 0,
+    "explanation": "Con un solo número, Substring toma desde esa posición hasta el final. La posición 5 es la «m»; el espacio está en la 4.",
+    "example": "\"hola mundo\".Substring(5)   // \"mundo\""
+  },
+  {
+    "id": "str-010", "topic": "Split", "level": 7,
+    "prompt": "¿Cuántos elementos tiene partes?",
+    "code": "string[] partes = \"rojo,verde,azul\".Split(',');",
+    "options": ["1", "2", "3"],
+    "correct": 2,
+    "explanation": "Split corta el texto en cada coma y devuelve un vector con los pedazos: rojo, verde y azul.",
+    "example": "partes[0]   // \"rojo\"\npartes[2]   // \"azul\""
+  },
+  {
+    "id": "str-011", "topic": "Normalizar", "level": 7,
+    "prompt": "El usuario escribió \"  SALIR \". ¿Qué expresión permite compararlo con \"salir\"?",
+    "options": ["entrada.ToUpper()", "entrada.Trim().ToLower()", "entrada.Length"],
+    "correct": 1,
+    "explanation": "Trim() saca los espacios y ToLower() unifica las mayúsculas. Se pueden encadenar. Eso es «normalizar» la entrada.",
+    "example": "string e = \"  SALIR \".Trim().ToLower();   // \"salir\""
+  },
+  {
+    "id": "sfl-001", "topic": "Trim", "type": "fill", "level": 7,
+    "prompt": "Completá el método que quita los espacios sobrantes.",
+    "code": "string limpio = texto.___();",
+    "answers": ["Trim"],
+    "explanation": "Trim() va con T mayúscula y paréntesis: en C# las mayúsculas importan.",
+    "example": "string limpio = texto.Trim();"
+  },
+  {
+    "id": "sfl-002", "topic": "Normalizar", "type": "fill", "level": 7,
+    "prompt": "Completá para pasar el texto a minúsculas.",
+    "code": "string t = entrada.Trim().___();",
+    "answers": ["ToLower"],
+    "explanation": "ToLower() convierte a minúsculas. Los métodos se encadenan de izquierda a derecha: primero Trim y después ToLower.",
+    "example": "string t = entrada.Trim().ToLower();"
+  },
+  {
+    "id": "sfl-003", "topic": "Substring", "type": "fill", "level": 7,
+    "prompt": "Escribí lo que imprime este código.",
+    "code": "string s = \"programa\";\nConsole.WriteLine(s.Substring(0, 3));",
+    "answers": ["pro"],
+    "explanation": "Desde la posición 0 toma 3 caracteres: p, r, o.",
+    "example": "\"programa\".Substring(0, 3)   // \"pro\""
+  },
+  {
+    "id": "sfl-004", "topic": "Contains", "type": "fill", "level": 7,
+    "prompt": "Completá el método que comprueba si la frase incluye «sol».",
+    "code": "if (frase.___(\"sol\"))\n    Console.WriteLine(\"Menciona al sol\");",
+    "answers": ["Contains"],
+    "explanation": "Contains devuelve true o false, así que se puede usar directo como condición del if.",
+    "example": "if (frase.Contains(\"sol\")) ..."
+  },
+  {
+    "id": "sfl-005", "topic": "Split", "type": "fill", "level": 7,
+    "prompt": "Escribí lo que imprime este código.",
+    "code": "string[] p = \"a-b-c-d\".Split('-');\nConsole.WriteLine(p.Length);",
+    "answers": ["4"],
+    "explanation": "Split corta en cada guion y quedan 4 pedazos: a, b, c y d. Length cuenta los elementos del vector.",
+    "example": "p[0] -> \"a\"\np[3] -> \"d\""
+  },
+  {
+    "id": "sor-001", "topic": "Normalizar", "type": "order", "level": 7,
+    "prompt": "Ordená las líneas: leer la entrada, normalizarla y reaccionar si está vacía o es «salir».",
+    "lines": [
+      "string entrada = Console.ReadLine();",
+      "entrada = entrada.Trim().ToLower();",
+      "if (entrada == \"\")",
+      "    Console.WriteLine(\"ENTRADA INVALIDA\");",
+      "else if (entrada == \"salir\")",
+      "    Console.WriteLine(\"FIN\");"
+    ],
+    "explanation": "Primero se lee, después se normaliza (si no, «SALIR » no coincidiría) y recién entonces se comparan los casos. Es el esquema del Ejercicio 2 del parcial.",
+    "example": ""
+  },
+  {
+    "id": "sor-002", "topic": "Split", "type": "order", "level": 7,
+    "prompt": "Ordená las líneas para separar una línea de datos y mostrar solo el nombre.",
+    "lines": [
+      "string linea = \"ana,20,rosario\";",
+      "string[] partes = linea.Split(',');",
+      "string nombre = partes[0];",
+      "Console.WriteLine(nombre);"
+    ],
+    "explanation": "Se parte la línea con Split, se toma el primer elemento del vector resultante y recién ahí se imprime.",
+    "example": ""
+  }
+]

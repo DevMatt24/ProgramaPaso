@@ -1,0 +1,179 @@
+[
+  {
+    "id": "dep-001", "topic": "Tipos de error", "level": 8,
+    "prompt": "¿Qué diferencia hay entre un error de sintaxis y uno de lógica?",
+    "options": ["El de sintaxis impide compilar; el de lógica compila pero da un resultado incorrecto", "No hay diferencia", "El de lógica impide compilar; el de sintaxis aparece al ejecutar"],
+    "correct": 0,
+    "explanation": "Los errores de sintaxis (falta un ; o una llave) los detecta el compilador. Los de lógica no: el programa corre, pero hace algo distinto de lo que querías.",
+    "example": "int x = 5      // sintaxis: falta ;\nsuma = i;      // lógica: querías suma += i;"
+  },
+  {
+    "id": "dep-002", "topic": "Errores de sintaxis", "level": 8,
+    "prompt": "¿Qué error tiene este código?",
+    "code": "int x = 5\nConsole.WriteLine(x);",
+    "options": ["Falta el punto y coma al final de la primera línea", "x no puede valer 5", "Sobra el WriteLine"],
+    "correct": 0,
+    "explanation": "Toda instrucción en C# termina con ;. El compilador suele marcar el error en la línea siguiente, así que mirá también la anterior.",
+    "example": "int x = 5;"
+  },
+  {
+    "id": "dep-003", "topic": "Errores de sintaxis", "level": 8,
+    "prompt": "¿Qué error tiene este código?",
+    "code": "if (x = 5)\n    Console.WriteLine(\"Cinco\");",
+    "options": ["Usa = (asignar) en lugar de == (comparar)", "Falta un else", "Sobran los paréntesis"],
+    "correct": 0,
+    "explanation": "= guarda un valor y == compara. En una condición hace falta comparar.",
+    "example": "if (x == 5)"
+  },
+  {
+    "id": "dep-004", "topic": "Errores de lógica", "level": 8,
+    "prompt": "Queremos la suma de 1 a 5, pero suma termina valiendo 5. ¿Qué falla?",
+    "code": "int suma = 0;\nfor (int i = 1; i <= 5; i++)\n    suma = i;",
+    "options": ["Falta inicializar i", "Asigna en lugar de acumular: debería ser suma += i", "El for debería ir hasta 6"],
+    "correct": 1,
+    "explanation": "suma = i pisa el valor anterior en cada vuelta y al final queda el último i. Para acumular hay que sumar sobre el valor que ya tenía.",
+    "example": "suma += i;   // suma = suma + i;"
+  },
+  {
+    "id": "dep-005", "topic": "Errores de lógica", "level": 8,
+    "prompt": "¿Qué problema tiene este código?",
+    "code": "int[] v = { 1, 2, 3 };\nfor (int i = 0; i <= v.Length; i++)\n    Console.WriteLine(v[i]);",
+    "options": ["Nada, imprime 1, 2 y 3", "Falta declarar i fuera del for", "i <= v.Length llega hasta 3 y se sale del vector"],
+    "correct": 2,
+    "explanation": "Los índices válidos son 0, 1 y 2. Con <= el bucle intenta leer v[3] y falla. La condición correcta es i < v.Length.",
+    "example": "for (int i = 0; i < v.Length; i++)"
+  },
+  {
+    "id": "dep-006", "topic": "Estrategia", "level": 8,
+    "prompt": "El compilador marca varios errores. ¿Cuál es la mejor estrategia?",
+    "options": ["Cambiar todo el código a la vez", "Empezar de cero", "Leer el mensaje (línea y tipo de error), corregir uno y volver a compilar"],
+    "correct": 2,
+    "explanation": "Un solo error de sintaxis puede provocar varios mensajes en cadena. Corregir el primero y recompilar suele hacer desaparecer los demás.",
+    "example": "Error CS1002: ; expected   (línea 3)"
+  },
+  {
+    "id": "dep-007", "topic": "Errores de ejecución", "level": 8,
+    "prompt": "El programa se cierra con IndexOutOfRangeException. ¿Qué significa?",
+    "options": ["Que falta un punto y coma", "Que se pidió una posición que no existe en el vector", "Que el vector está vacío de nacimiento"],
+    "correct": 1,
+    "explanation": "Pasa cuando usás un índice menor que 0 o mayor o igual que Length. Revisá las condiciones de los bucles y los índices fijos.",
+    "example": "int[] v = { 1, 2, 3 };\nv[3];   // no existe"
+  },
+  {
+    "id": "bug-002", "topic": "Encontrá el error", "type": "bug", "level": 8,
+    "prompt": "Este programa se rompe al ejecutarse. Marcá la línea que lo provoca.",
+    "lines": [
+      "int[] v = { 4, 8, 6 };",
+      "int suma = 0;",
+      "for (int i = 0; i <= v.Length; i++)",
+      "    suma += v[i];",
+      "Console.WriteLine(suma);"
+    ],
+    "bugLines": [3],
+    "explanation": "i <= v.Length hace que i llegue a 3 y v[3] no existe. Debe ser i < v.Length.",
+    "example": "for (int i = 0; i < v.Length; i++)"
+  },
+  {
+    "id": "bug-003", "topic": "Encontrá el error", "type": "bug", "level": 8,
+    "prompt": "El bloque del while nunca se ejecuta como se espera. Marcá la línea con el error.",
+    "lines": [
+      "int vidas = 3;",
+      "int puntos = 0;",
+      "while (vidas > 0 && puntos < 40);",
+      "{",
+      "    puntos += 10;",
+      "}"
+    ],
+    "bugLines": [3],
+    "explanation": "El ; al final del while lo convierte en un bucle vacío: repite «nada» para siempre y el bloque de abajo no es su cuerpo.",
+    "example": "while (vidas > 0 && puntos < 40)\n{\n    puntos += 10;\n}"
+  },
+  {
+    "id": "bug-004", "topic": "Encontrá el error", "type": "bug", "level": 8,
+    "prompt": "Hay errores de sintaxis y de tipos. Marcá todas las líneas con error.",
+    "lines": [
+      "string nombre = \"Ana\"",
+      "int edad = \"20\";",
+      "Console.WriteLine(nombre + edad);"
+    ],
+    "bugLines": [1, 2],
+    "explanation": "En la línea 1 falta el ;. En la línea 2 se guarda un texto (entre comillas) en una variable int: debería ser int edad = 20;",
+    "example": "string nombre = \"Ana\";\nint edad = 20;"
+  },
+  {
+    "id": "bug-005", "topic": "Encontrá el error", "type": "bug", "level": 8,
+    "prompt": "Cada «gana» suma 10 puntos y cada «pierde» resta 1 vida. Marcá las líneas con error.",
+    "lines": [
+      "int vidas = 3;",
+      "int puntos = 0;",
+      "string[] eventos = { \"gana\", \"pierde\", \"gana\" };",
+      "for (int i = 0; i < eventos.Length; i++)",
+      "{",
+      "    if (eventos[i] = \"gana\")",
+      "        puntos += 10;",
+      "    else",
+      "        vidas++;",
+      "}"
+    ],
+    "bugLines": [6, 9],
+    "explanation": "Línea 6: para comparar se usa ==, no =. Línea 9: «pierde» debe restar una vida (vidas--), no sumarla.",
+    "example": "if (eventos[i] == \"gana\")\n    puntos += 10;\nelse\n    vidas--;"
+  },
+  {
+    "id": "bug-006", "topic": "Encontrá el error", "type": "bug", "level": 8,
+    "prompt": "Debería contar cuántas espadas hay (2), pero imprime 1. Marcá la línea con el error.",
+    "lines": [
+      "string[] objetos = { \"espada\", \"escudo\", \"espada\" };",
+      "int cont = 0;",
+      "for (int i = 0; i < objetos.Length; i++)",
+      "{",
+      "    if (objetos[i] == \"espada\")",
+      "        cont = 1;",
+      "}",
+      "Console.WriteLine(cont);"
+    ],
+    "bugLines": [6],
+    "explanation": "cont = 1 siempre deja el contador en 1. Para contar hay que sumar 1 cada vez: cont++.",
+    "example": "cont++;"
+  },
+  {
+    "id": "dfl-001", "topic": "Corregí la línea", "type": "fill", "level": 8,
+    "prompt": "Queremos saber si vidas es igual a 0. Completá el operador.",
+    "code": "int vidas = 0;\nif (vidas ___ 0)\n    Console.WriteLine(\"Sin vidas\");",
+    "answers": ["=="],
+    "explanation": "Comparar por igualdad se escribe con dos signos igual.",
+    "example": "if (vidas == 0)"
+  },
+  {
+    "id": "dfl-002", "topic": "Corregí la línea", "type": "fill", "level": 8,
+    "prompt": "Corregí el acumulador para que sume de verdad.",
+    "code": "int suma = 0;\nfor (int i = 1; i <= 5; i++)\n    suma ___ i;",
+    "answers": ["+=", "=suma+i", "=i+suma"],
+    "explanation": "El acumulador se suma a sí mismo: suma += i.",
+    "example": "suma += i;"
+  },
+  {
+    "id": "dfl-003", "topic": "Corregí la línea", "type": "fill", "level": 8,
+    "prompt": "Completá el operador para recorrer el vector sin salirte.",
+    "code": "for (int i = 0; i ___ v.Length; i++)\n    Console.WriteLine(v[i]);",
+    "answers": ["<"],
+    "explanation": "i debe quedar siempre por debajo de Length. Con <= se saldría del vector.",
+    "example": "i < v.Length"
+  },
+  {
+    "id": "dfl-004", "topic": "Corregí la línea", "type": "fill", "level": 8,
+    "prompt": "Cada «pierde» resta 1 vida. Completá la línea del else.",
+    "code": "if (evento == \"gana\")\n    puntos += 10;\nelse\n    vidas___;",
+    "answers": ["--", "-=1", "=vidas-1"],
+    "explanation": "Para restar 1 se usa vidas-- (o vidas -= 1).",
+    "example": "vidas--;"
+  },
+  {
+    "id": "dfl-005", "topic": "Errores de lógica", "type": "fill", "level": 8,
+    "prompt": "Este código tiene un error de lógica. Escribí lo que realmente imprime.",
+    "code": "int cont = 0;\nfor (int i = 0; i < 5; i++)\n    cont = 1;\nConsole.WriteLine(cont);",
+    "answers": ["1"],
+    "explanation": "cont = 1 no suma, siempre lo deja en 1, aunque el for dé 5 vueltas. Debería ser cont++ para llegar a 5.",
+    "example": "cont++;   // ahora imprimiría 5"
+  }
+]

@@ -35,7 +35,7 @@ else if (_result is null)
             <span class="chip">Nivel @_level · @q.Topic</span>
             @if (q.Type != "choice")
             {
-                <span class="chip kind">@(q.Type == "fill" ? "Completar" : "Ordenar")</span>
+                <span class="chip kind">@KindLabel(q.Type)</span>
             }
             <h2 class="prompt" @key="_index">@q.Prompt</h2>
         </header>
@@ -61,6 +61,20 @@ else if (_result is null)
                         }
                         <input class="@inputClass standalone" @bind="_text" @bind:event="oninput" @onkeydown="OnKey" @ref="_input" disabled="@_answered" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Escribí tu respuesta" aria-label="Tu respuesta" />
                     }
+                    break;
+                }
+                case "bug":
+                {
+                    <p class="bug-count">Tocá las líneas con error. Hay @(q.BugLines.Count == 1 ? "1 línea" : $"{q.BugLines.Count} líneas") con error.</p>
+                    <div class="bugs">
+                        @for (int i = 0; i < q.Lines.Count; i++)
+                        {
+                            var li = i;
+                            <button class="@BugClass(li)" disabled="@_answered" @onclick="() => ToggleBug(li)">
+                                <span class="no">@(li + 1)</span><code>@q.Lines[li]</code>
+                            </button>
+                        }
+                    </div>
                     break;
                 }
                 case "order":
@@ -123,6 +137,10 @@ else if (_result is null)
                     {
                         <pre class="code small">@q.CorrectText</pre>
                     }
+                    @if (!ok && q.Type == "bug")
+                    {
+                        <p>Con error: <code class="inline">@q.CorrectText</code></p>
+                    }
                     <p>@q.Explanation</p>
                     @if (!string.IsNullOrWhiteSpace(q.Example))
                     {
@@ -178,6 +196,12 @@ else
                             <p class="right-line">Orden correcto:</p>
                             <pre class="code small">@m.Question.CorrectText</pre>
                         }
+                        else if (m.Question.Type == "bug")
+                        {
+                            <pre class="code small">@m.Question.NumberedCode</pre>
+                            <p class="wrong-line">Marcaste: @m.Given</p>
+                            <p class="right-line">Con error: @m.Question.CorrectText</p>
+                        }
                         else
                         {
                             if (!string.IsNullOrWhiteSpace(m.Question.Code))
@@ -227,6 +251,7 @@ else
     private int[] _order = Array.Empty<int>();       // choice: orden mezclado de opciones
     private int[] _lineOrder = Array.Empty<int>();   // order: orden mezclado de líneas
     private readonly List<int> _picked = new();      // order: líneas elegidas por el usuario
+    private readonly HashSet<int> _bugSel = new();   // bug: líneas marcadas (índice desde 0)
     private string _text = "";                       // fill: texto escrito
     private int _level, _index, _pick, _streak, _bestStreak;
     private bool _answered, _scrollToFeedback, _focusInput, _muted;
@@ -285,6 +310,7 @@ else
         _answered = false;
         _text = "";
         _picked.Clear();
+        _bugSel.Clear();
 
         // Mezcla opciones/líneas para que no se memorice la posición
         _order = Enumerable.Range(0, q.Options.Count).OrderBy(_ => _rng.Next()).ToArray();
@@ -360,6 +386,40 @@ else
         await Sound.PlayAsync("tap");
     }
 
+    private async Task ToggleBug(int index)
+    {
+        if (_answered) return;
+        if (!_bugSel.Remove(index)) _bugSel.Add(index);
+        await Sound.PlayAsync("tap");
+    }
+
+    private async Task CheckBug()
+    {
+        var q = _quiz![_index];
+        var chosen = _bugSel.Select(i => i + 1).OrderBy(i => i).ToList();
+        var ok = new HashSet<int>(chosen).SetEquals(q.BugLines);
+        await Resolve(q, Question.FormatLines(chosen), ok);
+    }
+
+    private string BugClass(int index)
+    {
+        var isBug = _quiz![_index].BugLines.Contains(index + 1);
+        var selected = _bugSel.Contains(index);
+        if (!_answered) return selected ? "bugline sel" : "bugline";
+        if (isBug && selected) return "bugline hit";      // la encontró
+        if (isBug) return "bugline missed";               // se le escapó
+        if (selected) return "bugline wrong";             // marcó una línea sana
+        return "bugline";
+    }
+
+    private static string KindLabel(string type) => type switch
+    {
+        "fill" => "Completar",
+        "order" => "Ordenar",
+        "bug" => "Depurar",
+        _ => ""
+    };
+
     private async Task OnKey(KeyboardEventArgs e)
     {
         if (e.Key == "Enter" && !_answered && !string.IsNullOrWhiteSpace(_text)) await CheckFill();
@@ -371,6 +431,7 @@ else
     {
         "fill" => !_answered && string.IsNullOrWhiteSpace(_text),
         "order" => !_answered && _picked.Count < q.Lines.Count,
+        "bug" => !_answered && _bugSel.Count == 0,
         _ => !_answered
     };
 
@@ -386,6 +447,7 @@ else
         if (_answered) { await Next(); return; }
         if (q.Type == "fill") await CheckFill();
         else if (q.Type == "order") await CheckOrder();
+        else if (q.Type == "bug") await CheckBug();
     }
 
     private async Task Next()

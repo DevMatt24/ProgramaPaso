@@ -6,7 +6,7 @@ public class Question
     public string Topic { get; set; } = "";
     public int Level { get; set; }
 
-    // "choice" (elegir opción), "fill" (completar/escribir) u "order" (ordenar líneas)
+    // "choice" (elegir), "fill" (completar/escribir), "order" (ordenar líneas) o "bug" (marcar líneas con error)
     public string Type { get; set; } = "choice";
 
     public string Prompt { get; set; } = "";
@@ -19,8 +19,11 @@ public class Question
     // fill: respuestas aceptadas. Usá ___ en Code para marcar el hueco (opcional)
     public List<string> Answers { get; set; } = new();
 
-    // order: líneas en el orden correcto
+    // order: líneas en el orden correcto. bug: las líneas del código a depurar
     public List<string> Lines { get; set; } = new();
+
+    // bug: números de línea con error, contando desde 1
+    public List<int> BugLines { get; set; } = new();
 
     public string Explanation { get; set; } = "";
     public string Example { get; set; } = "";
@@ -29,8 +32,15 @@ public class Question
     {
         "fill" => Answers.FirstOrDefault() ?? "",
         "order" => string.Join("\n", Lines),
+        "bug" => FormatLines(BugLines),
         _ => Correct >= 0 && Correct < Options.Count ? Options[Correct] : ""
     };
+
+    // bug: código con las líneas numeradas
+    public string NumberedCode => string.Join("\n", Lines.Select((l, i) => $"{i + 1,2}  {l}"));
+
+    public static string FormatLines(IReadOnlyCollection<int> numbers)
+        => numbers.Count == 1 ? $"Línea {numbers.First()}" : $"Líneas {string.Join(", ", numbers)}";
 }
 
 public record AnswerResult(Question Question, string Given, bool IsCorrect);

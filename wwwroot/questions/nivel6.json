@@ -1,0 +1,163 @@
+[
+  {
+    "id": "vec-001", "topic": "Vectores", "level": 6,
+    "prompt": "¿Qué es un vector (array)?",
+    "options": ["Una variable que guarda un solo número", "Una colección de elementos del mismo tipo guardados bajo un solo nombre", "Un tipo de bucle"],
+    "correct": 1,
+    "explanation": "Un vector te permite guardar muchos datos del mismo tipo juntos, en vez de crear una variable para cada uno.",
+    "example": "int[] notas = { 7, 8, 9 };\nstring[] nombres = { \"Ana\", \"Luis\" };"
+  },
+  {
+    "id": "vec-002", "topic": "Índices", "level": 6,
+    "prompt": "¿Cuál es el índice del primer elemento de un vector?",
+    "options": ["1", "0", "-1"],
+    "correct": 1,
+    "explanation": "En C# los índices empiezan en 0. El primer elemento es v[0], el segundo v[1], y así.",
+    "example": "int[] v = { 10, 20, 30 };\nv[0]   // 10\nv[2]   // 30"
+  },
+  {
+    "id": "vec-003", "topic": "Índices", "level": 6,
+    "prompt": "¿Cuánto vale x?",
+    "code": "int[] n = { 4, 7, 9 };\nint x = n[1];",
+    "options": ["4", "9", "7"],
+    "correct": 2,
+    "explanation": "n[1] es el segundo elemento porque se cuenta desde 0: n[0] = 4, n[1] = 7, n[2] = 9.",
+    "example": "n[0] -> 4\nn[1] -> 7\nn[2] -> 9"
+  },
+  {
+    "id": "vec-004", "topic": "Declaración", "level": 6,
+    "prompt": "Si declarás int[] v = new int[5];, ¿cuántos elementos tiene y cuál es el último índice?",
+    "options": ["5 elementos, último índice 5", "5 elementos, último índice 4", "4 elementos, último índice 4"],
+    "correct": 1,
+    "explanation": "Tiene 5 posiciones, numeradas de 0 a 4. El último índice siempre es el tamaño menos 1.",
+    "example": "int[] v = new int[5];\n// posiciones: v[0] v[1] v[2] v[3] v[4]"
+  },
+  {
+    "id": "vec-005", "topic": "Vectores", "level": 6,
+    "prompt": "¿Qué devuelve v.Length?",
+    "options": ["La cantidad de elementos del vector", "El último valor guardado", "El índice del último elemento"],
+    "correct": 0,
+    "explanation": "Length es la cantidad de posiciones del vector. Como el último índice es Length - 1, se usa para recorrerlo entero.",
+    "example": "int[] v = { 5, 6, 7 };\nv.Length   // 3"
+  },
+  {
+    "id": "vec-006", "topic": "Índices", "level": 6,
+    "prompt": "¿Qué pasa al ejecutar este código?",
+    "code": "int[] v = { 1, 2, 3 };\nConsole.WriteLine(v[3]);",
+    "options": ["Imprime 3", "Error en ejecución: el índice 3 no existe", "Imprime 0"],
+    "correct": 1,
+    "explanation": "El vector tiene índices 0, 1 y 2. Pedir v[3] se sale del rango y el programa lanza IndexOutOfRangeException.",
+    "example": "v[v.Length - 1]   // último elemento, siempre válido"
+  },
+  {
+    "id": "vec-007", "topic": "Recorrido", "level": 6,
+    "prompt": "¿Cuánto vale suma al terminar?",
+    "code": "int[] v = { 2, 4, 6 };\nint suma = 0;\nfor (int i = 0; i < v.Length; i++)\n    suma += v[i];",
+    "options": ["6", "12", "9"],
+    "correct": 1,
+    "explanation": "El for visita cada posición y acumula su valor: 2 + 4 + 6 = 12.",
+    "example": "i = 0 -> suma = 2\ni = 1 -> suma = 6\ni = 2 -> suma = 12"
+  },
+  {
+    "id": "vec-008", "topic": "Recorrido", "level": 6,
+    "prompt": "¿Qué condición recorre todo el vector sin salirse?",
+    "options": ["i <= v.Length", "i < v.Length + 1", "i < v.Length"],
+    "correct": 2,
+    "explanation": "Con i < v.Length, i llega hasta Length - 1, el último índice válido. Con <= se intentaría leer v[Length], que no existe.",
+    "example": "for (int i = 0; i < v.Length; i++)"
+  },
+  {
+    "id": "vec-009", "topic": "Búsqueda", "level": 6,
+    "prompt": "¿Cuánto vale hay al terminar?",
+    "code": "int[] v = { 3, 8, 5 };\nbool hay = false;\nfor (int i = 0; i < v.Length; i++)\n{\n    if (v[i] == 8)\n        hay = true;\n}",
+    "options": ["true", "false"],
+    "correct": 0,
+    "explanation": "Cuando i vale 1, v[1] es 8 y la bandera pasa a true. Es el patrón básico de búsqueda: bandera + recorrido.",
+    "example": "bool hay = false;\n// si lo encuentra: hay = true;"
+  },
+  {
+    "id": "vec-011", "topic": "Vectores paralelos", "level": 6,
+    "prompt": "Dos vectores se relacionan por posición. Si objetos[1] es \"espada\", ¿dónde está su valor?",
+    "code": "string[] objetos = { \"escudo\", \"espada\", \"casco\" };\nint[] valores    = {   50,       120,      30   };",
+    "options": ["valores[0]", "valores[2]", "valores[1]"],
+    "correct": 2,
+    "explanation": "Los vectores paralelos usan el mismo índice para el mismo elemento: objetos[i] y valores[i] hablan de lo mismo. Así funciona el inventario de tu parcial.",
+    "example": "objetos[1]  -> \"espada\"\nvalores[1]  -> 120"
+  },
+  {
+    "id": "vfl-001", "topic": "Declaración", "type": "fill", "level": 6,
+    "prompt": "Completá para declarar un vector de 5 enteros.",
+    "code": "int[] notas = new int[___];",
+    "answers": ["5"],
+    "explanation": "Entre corchetes va el tamaño: la cantidad de posiciones que tendrá el vector.",
+    "example": "int[] notas = new int[5];   // índices 0 a 4"
+  },
+  {
+    "id": "vfl-002", "topic": "Recorrido", "type": "fill", "level": 6,
+    "prompt": "Completá la condición para recorrer todo el vector.",
+    "code": "for (int i = 0; i < v.___; i++)\n    Console.WriteLine(v[i]);",
+    "answers": ["Length"],
+    "explanation": "Length da la cantidad de elementos. Escribilo con L mayúscula: en C# las mayúsculas importan.",
+    "example": "i < v.Length"
+  },
+  {
+    "id": "vfl-003", "topic": "Índices", "type": "fill", "level": 6,
+    "prompt": "Completá el índice para leer el tercer elemento.",
+    "code": "int[] v = { 10, 20, 30, 40 };\nint x = v[___];",
+    "answers": ["2"],
+    "explanation": "Se cuenta desde 0: el primero es 0, el segundo 1 y el tercero 2.",
+    "example": "v[0] -> 10\nv[1] -> 20\nv[2] -> 30"
+  },
+  {
+    "id": "vfl-004", "topic": "Procesamiento", "type": "fill", "level": 6,
+    "prompt": "Escribí lo que imprime este código.",
+    "code": "int[] v = { 5, 1, 9, 3 };\nint mayor = v[0];\nfor (int i = 1; i < v.Length; i++)\n{\n    if (v[i] > mayor)\n        mayor = v[i];\n}\nConsole.WriteLine(mayor);",
+    "answers": ["9"],
+    "explanation": "Parte suponiendo que el mayor es el primero y lo va reemplazando cada vez que encuentra uno más grande. Termina en 9.",
+    "example": "mayor = 5\nv[2] = 9 > 5 -> mayor = 9"
+  },
+  {
+    "id": "vfl-005", "topic": "Conteo", "type": "fill", "level": 6,
+    "prompt": "Completá para contar cuántas veces aparece el objeto buscado.",
+    "code": "int cont = 0;\nfor (int i = 0; i < objetos.Length; i++)\n{\n    if (objetos[i] == buscado)\n        cont___;\n}",
+    "answers": ["++", "+=1", "=cont+1", "=1+cont"],
+    "explanation": "Cada coincidencia suma 1 al contador. Es el corazón de ContarObjeto.",
+    "example": "cont++;"
+  },
+  {
+    "id": "vor-001", "topic": "Conteo", "type": "order", "level": 6,
+    "prompt": "Ordená las líneas de ContarObjeto: devuelve cuántas veces aparece buscado en el vector.",
+    "lines": [
+      "static int ContarObjeto(string[] objetos, string buscado)",
+      "{",
+      "    int cont = 0;",
+      "    for (int i = 0; i < objetos.Length; i++)",
+      "    {",
+      "        if (objetos[i] == buscado)",
+      "            cont++;",
+      "    }",
+      "    return cont;",
+      "}"
+    ],
+    "explanation": "Firma, contador en 0, recorrido con for, if que compara cada elemento con buscado, suma al contador y return al final. Este es el método que pide tu parcial.",
+    "example": ""
+  },
+  {
+    "id": "vor-002", "topic": "Vectores paralelos", "type": "order", "level": 6,
+    "prompt": "Ordená las líneas de SumarValor: suma los valores de las posiciones donde está el objeto buscado.",
+    "lines": [
+      "static int SumarValor(string[] objetos, int[] valores, string buscado)",
+      "{",
+      "    int total = 0;",
+      "    for (int i = 0; i < objetos.Length; i++)",
+      "    {",
+      "        if (objetos[i] == buscado)",
+      "            total += valores[i];",
+      "    }",
+      "    return total;",
+      "}"
+    ],
+    "explanation": "Se recorre objetos, y cuando uno coincide se acumula valores[i], que está en la misma posición. El acumulador empieza en 0 y se devuelve al final.",
+    "example": ""
+  }
+]

@@ -5,7 +5,7 @@ public record LevelInfo(int Number, string Title, bool Available);
 public static class Curriculum
 {
     // Subí este número a medida que agregues nivelN.json
-    public const int AvailableLevels = 5;
+    public const int AvailableLevels = 8;
 
     public static readonly LevelInfo[] Levels =
     {
@@ -14,9 +14,9 @@ public static class Curriculum
         new(3, "Repetitivas: for y while", true),
         new(4, "Contadores, acumuladores y banderas", true),
         new(5, "Métodos", true),
-        new(6, "Vectores", false),
-        new(7, "Cadenas de caracteres", false),
-        new(8, "Depurar código", false),
+        new(6, "Vectores", true),
+        new(7, "Cadenas de caracteres", true),
+        new(8, "Depurar código", true),
         new(9, "Integrador tipo parcial", false),
     };
 }

@@ -259,3 +259,21 @@ code.inline { font-family: var(--mono); background: rgba(58, 31, 18, .08); paddi
 .line.placed:hover:not(:disabled) { background: rgba(255, 233, 207, .2); }
 .line .no { flex: none; width: 1.3rem; height: 1.3rem; display: grid; place-items: center; border-radius: 6px; background: rgba(255, 233, 207, .15); font-size: .72rem; color: #c9a98f; }
 .line:disabled { cursor: default; }
+
+/* ---------- Depuración: marcar líneas con error ---------- */
+.bug-count { font-size: .88rem; color: var(--muted); margin: 0 0 .6rem; }
+.bugs { display: grid; gap: .25rem; background: #2b1618; border-radius: 12px; padding: .5rem; margin-bottom: 1rem; overflow-x: auto; }
+.bugline {
+    display: flex; align-items: center; gap: .6rem; width: 100%; text-align: left; cursor: pointer;
+    background: transparent; color: #ffd9a8; border: 2px solid transparent; border-radius: 8px;
+    padding: .3rem .6rem; font-family: var(--mono); font-size: .85rem; line-height: 1.4;
+    transition: background .15s ease, border-color .15s ease;
+}
+.bugline code { font-family: inherit; white-space: pre; }
+.bugline .no { flex: none; width: 1.5rem; text-align: right; color: #c9a98f; font-size: .78rem; }
+.bugline:hover:not(:disabled) { background: rgba(255, 233, 207, .1); }
+.bugline:disabled { cursor: default; }
+.bugline.sel { border-color: var(--honey); background: rgba(245, 165, 36, .2); }
+.bugline.hit { border-color: var(--right); background: rgba(47, 179, 107, .3); }
+.bugline.missed { border-color: var(--honey); border-style: dashed; background: rgba(245, 165, 36, .14); }
+.bugline.wrong { border-color: var(--wrong); background: rgba(224, 57, 79, .3); animation: shake .35s ease; }
