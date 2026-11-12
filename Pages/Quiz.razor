@@ -33,7 +33,7 @@ else if (_result is null)
                 </div>
                 <button class="mute" @onclick="ToggleMute" aria-label="@(_muted ? "Activar sonido" : "Silenciar")">@(_muted ? "🔇" : "🔊")</button>
             </div>
-            <span class="chip">Nivel @_level · @q.Topic</span>
+            <span class="chip">@(q.Level == _level ? $"Nivel {_level}" : $"Repaso · nivel {q.Level}") · @q.Topic</span>
             @if (q.Type != "choice")
             {
                 <span class="chip kind">@KindLabel(q.Type)</span>
@@ -393,7 +393,15 @@ else
     private async Task Restart()
     {
         var pool = await Bank.GetLevelAsync(_level);
-        _quiz = Engine.BuildQuiz(pool, Math.Min(8, pool.Count));
+
+        // Repaso: preguntas de niveles anteriores (los retos del nivel 9 no llevan repaso)
+        var review = new List<Question>();
+        if (_level > 1 && !pool.Any(q => q.Type == "code"))
+            for (int l = 1; l < _level; l++)
+                review.AddRange(await Bank.GetLevelAsync(l));
+
+        var mastery = await Progress.GetMasteryAsync();
+        _quiz = Engine.BuildAdaptiveQuiz(pool, review, mastery, Math.Min(8, pool.Count));
         _answers = new AnswerResult?[_quiz.Count];
         _marks = new bool?[_quiz.Count];
         _index = 0; _streak = 0; _bestStreak = 0;
@@ -616,7 +624,7 @@ else
         }
 
         _result = new QuizResult(_answers.Select(a => a!).ToList());
-        await Progress.SaveBestAsync(_level, _result.Score);
+        await Progress.RecordAsync(_level, _result);
         await Sound.PlayAsync(_result.Passed(ProgressService.PassMark) ? "win" : "lose");
     }
 

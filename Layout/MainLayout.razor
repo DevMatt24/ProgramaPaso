@@ -1,9 +1,19 @@
 @inherits LayoutComponentBase
+@using ProgramaPaso.Services
+@inject AuthService Auth
+@inject NavigationManager Nav
 
 <div class="page">
     <div class="phone">
         <div class="notch" aria-hidden="true"></div>
-        @Body
+        @if (!_ready || !_allowed)
+        {
+            <div class="screen"><p class="muted loading">Cargando…</p></div>
+        }
+        else
+        {
+            @Body
+        }
     </div>
 </div>
 
@@ -12,3 +22,51 @@
     <a href="." class="reload">Recargar</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private bool _ready, _allowed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Auth.InitAsync();
+        _ready = true;
+        Guard();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (_ready) Guard();
+    }
+
+    // Quién puede ver qué:
+    //  sin sesión            -> solo /login
+    //  con sesión sin nombre -> solo /bienvenida (registro)
+    //  con sesión completa   -> todo menos /login y /bienvenida
+    private void Guard()
+    {
+        _allowed = true;
+        if (!Auth.IsConfigured) return;   // Supabase sin configurar: modo local, sin login
+
+        var path = Nav.ToBaseRelativePath(Nav.Uri).Split('?', '#')[0].Trim('/');
+        var onLogin = path == "login";
+        var onWelcome = path == "bienvenida";
+
+        if (!Auth.IsLoggedIn)
+        {
+            if (!onLogin) { _allowed = false; Nav.NavigateTo("login", replace: true); }
+            return;
+        }
+
+        if (Auth.NeedsOnboarding)
+        {
+            if (!onWelcome) { _allowed = false; Nav.NavigateTo("bienvenida", replace: true); }
+            return;
+        }
+
+        if (onLogin || onWelcome)
+        {
+            _allowed = false;
+            Nav.NavigateTo("", replace: true);
+        }
+    }
+}

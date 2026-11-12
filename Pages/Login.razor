@@ -1,0 +1,67 @@
+@page "/login"
+@using ProgramaPaso.Services
+@inject AuthService Auth
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<PageTitle>Ingresar · ProgramaPaso</PageTitle>
+
+<div class="screen">
+    <header class="q-head">
+        <div class="bar"><span class="brand">ProgramaPaso</span></div>
+        <h1 class="prompt big-title">@(_signup ? "Creá tu cuenta" : "Ingresá a tu cuenta")</h1>
+        <p class="sub">
+            @(_signup
+                ? "Con tu cuenta de Google. Después elegís cómo querés que te llamemos."
+                : "Seguí donde lo dejaste.")
+        </p>
+    </header>
+
+    <div class="q-body">
+        <div class="tabs" role="tablist">
+            <button class="tab @(!_signup ? "on" : "")" role="tab" aria-selected="@(_signup ? "false" : "true")" @onclick="() => _signup = false">Ingresar</button>
+            <button class="tab @(_signup ? "on" : "")" role="tab" aria-selected="@(_signup ? "true" : "false")" @onclick="() => _signup = true">Crear cuenta</button>
+        </div>
+
+        @if (!Auth.IsConfigured)
+        {
+            <p class="issue">Falta configurar Supabase: completá Url y AnonKey en <code class="inline">wwwroot/appsettings.json</code>.</p>
+        }
+        @if (_error is not null)
+        {
+            <p class="issue">No se pudo iniciar sesión: @_error</p>
+        }
+
+        <h3 class="review-title">Para qué te pedimos la cuenta</h3>
+        <ul class="why">
+            <li><b>Tu nombre</b> para saludarte.</li>
+            <li><b>Tus puntajes</b> por nivel, para que no pierdas el progreso al cambiar de dispositivo.</li>
+            <li><b>Tu dominio por tema</b>: la app lo usa para repasar lo que te cuesta y sacar menos lo que ya sabés.</li>
+        </ul>
+        <p class="muted small">No mostramos tu correo ni tu progreso a otros usuarios.</p>
+    </div>
+
+    <footer class="q-foot">
+        @if (Auth.IsConfigured)
+        {
+            <a class="cta google" href="@Auth.GoogleLoginUrl(Nav.BaseUri)">
+                <span class="g" aria-hidden="true">G</span> Continuar con Google
+            </a>
+        }
+        else
+        {
+            <button class="cta" disabled>Continuar con Google</button>
+        }
+        <div class="live">@(_signup ? "Si ya tenés cuenta, también te deja entrar." : "Si es tu primera vez, se crea la cuenta.")</div>
+    </footer>
+</div>
+
+@code {
+    private bool _signup;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try { _error = await JS.InvokeAsync<string?>("pp.takeAuthError"); } catch { }
+    }
+}

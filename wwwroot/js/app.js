@@ -1,4 +1,4 @@
-// Sonidos (Web Audio, sin archivos) y almacenamiento local
+// Sonidos (Web Audio, sin archivos), almacenamiento local y retorno del login con Google
 window.pp = (() => {
     let ctx = null;
     const muted = () => localStorage.getItem('pp_muted') === '1';
@@ -32,6 +32,44 @@ window.pp = (() => {
         isMuted() { try { return muted(); } catch { return false; } },
         setMuted(m) { try { localStorage.setItem('pp_muted', m ? '1' : '0'); } catch { } },
         get(key) { try { return localStorage.getItem(key); } catch { return null; } },
-        set(key, value) { try { localStorage.setItem(key, value); } catch { } }
+        set(key, value) { try { localStorage.setItem(key, value); } catch { } },
+        remove(key) { try { localStorage.removeItem(key); } catch { } },
+        // Mensaje de error del login con Google (se lee una sola vez)
+        takeAuthError() {
+            try {
+                const e = sessionStorage.getItem('pp_auth_error');
+                sessionStorage.removeItem('pp_auth_error');
+                return e;
+            } catch { return null; }
+        }
     };
+})();
+
+// Login con Google (Supabase): al volver de Google, los tokens llegan en el
+// fragmento de la URL (#access_token=...). Se guardan y se limpia la dirección.
+// Se ejecuta apenas carga este archivo, antes de que arranque Blazor.
+(function captureAuthRedirect() {
+    try {
+        const clean = () => history.replaceState(null, '', location.pathname);
+        const hash = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+        const query = new URLSearchParams(location.search || '');
+
+        if (hash.get('access_token') && hash.get('refresh_token')) {
+            const expiresIn = parseInt(hash.get('expires_in') || '3600', 10);
+            const expiresAt = parseInt(hash.get('expires_at') || '0', 10) || Math.floor(Date.now() / 1000) + expiresIn;
+            localStorage.setItem('pp_session', JSON.stringify({
+                access_token: hash.get('access_token'),
+                refresh_token: hash.get('refresh_token'),
+                expires_at: expiresAt
+            }));
+            clean();
+            return;
+        }
+
+        const err = hash.get('error_description') || hash.get('error') || query.get('error_description');
+        if (err) {
+            sessionStorage.setItem('pp_auth_error', err.replace(/\+/g, ' '));
+            clean();
+        }
+    } catch { }
 })();

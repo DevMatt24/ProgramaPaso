@@ -17,4 +17,11 @@ builder.Services.AddScoped<ProgramaPaso.Services.ProgressService>();
 
 builder.Services.AddScoped<ProgramaPaso.Services.CodeRunnerService>();
 
+builder.Services.AddScoped(_ => new ProgramaPaso.Services.SupabaseOptions
+{
+    Url = builder.Configuration["Supabase:Url"]?.TrimEnd('/') ?? "",
+    AnonKey = builder.Configuration["Supabase:AnonKey"] ?? ""
+});
+builder.Services.AddScoped<ProgramaPaso.Services.AuthService>();
+
 await builder.Build().RunAsync();

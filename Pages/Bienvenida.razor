@@ -1,0 +1,65 @@
+@page "/bienvenida"
+@using ProgramaPaso.Services
+@inject AuthService Auth
+@inject NavigationManager Nav
+
+<PageTitle>Bienvenida · ProgramaPaso</PageTitle>
+
+<div class="screen">
+    <header class="q-head">
+        <div class="bar"><span class="brand">ProgramaPaso</span></div>
+        <h1 class="prompt big-title">¡Bienvenido/a!</h1>
+        <p class="sub">Ya entraste con Google. Un último paso para terminar el registro.</p>
+    </header>
+
+    <div class="q-body">
+        <label class="order-label" for="nombre">¿Cómo querés que te llamemos?</label>
+        <input id="nombre" class="fill-input standalone" @bind="_name" @bind:event="oninput" @onkeydown="OnKey"
+               maxlength="40" autocomplete="off" placeholder="Tu nombre" />
+        @if (_error is not null)
+        {
+            <p class="issue">@_error</p>
+        }
+        <p class="muted small">Cuenta: @Auth.Email</p>
+    </div>
+
+    <footer class="q-foot">
+        <button class="cta" disabled="@(_saving || _name.Trim().Length < 2)" @onclick="Save">
+            @(_saving ? "Guardando…" : "Empezar")
+        </button>
+        <button class="link-btn" @onclick="Logout">Usar otra cuenta</button>
+    </footer>
+</div>
+
+@code {
+    private string _name = "";
+    private bool _saving;
+    private string? _error;
+
+    protected override void OnInitialized() => _name = Auth.GoogleName;
+
+    private async Task OnKey(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && _name.Trim().Length >= 2) await Save();
+    }
+
+    private async Task Save()
+    {
+        if (_saving) return;
+        _saving = true;
+        _error = null;
+
+        if (await Auth.SaveNameAsync(_name))
+            Nav.NavigateTo("", replace: true);
+        else
+            _error = "No pude guardar tu nombre. Revisá tu conexión y que el esquema de Supabase esté creado.";
+
+        _saving = false;
+    }
+
+    private async Task Logout()
+    {
+        await Auth.SignOutAsync();
+        Nav.NavigateTo("login", forceLoad: true);
+    }
+}

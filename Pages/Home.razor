@@ -2,17 +2,41 @@
 @using ProgramaPaso.Domain
 @using ProgramaPaso.Services
 @inject ProgressService Progress
+@inject AuthService Auth
+@inject NavigationManager Nav
 
 <PageTitle>ProgramaPaso</PageTitle>
 
 <div class="screen">
     <header class="q-head">
-        <div class="bar"><span class="brand">ProgramaPaso</span></div>
-        <h1 class="prompt big-title">Aprobá C# practicando de a un paso</h1>
+        <div class="bar">
+            <span class="brand">ProgramaPaso</span>
+            @if (Auth.IsLoggedIn)
+            {
+                <button class="exit" @onclick="Logout">Salir</button>
+            }
+        </div>
+        <h1 class="prompt big-title">@(Auth.IsLoggedIn ? $"Hola, {Auth.DisplayName}" : "Aprobá C# practicando de a un paso")</h1>
         <p class="sub">Preguntas cortas, respuesta al instante y una explicación cuando te equivocás.</p>
     </header>
 
     <div class="q-body">
+        @if (_hasData)
+        {
+            <div class="mastery">
+                <div class="mastery-head"><span>Tu dominio general</span><b>@_ability / 100</b></div>
+                <div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@_ability"><span style="width:@(_ability)%"></span></div>
+                @if (_weak.Count > 0)
+                {
+                    <p class="muted small">Te conviene repasar: @string.Join(", ", _weak). Van a aparecer más seguido en tus quizzes.</p>
+                }
+                else
+                {
+                    <p class="muted small">No tenés temas flojos por ahora. ¡Seguí así!</p>
+                }
+            </div>
+        }
+
         <ol class="path">
             @foreach (var l in Curriculum.Levels)
             {
@@ -49,7 +73,9 @@
 @code {
     private readonly Dictionary<int, int> _best = new();
     private readonly HashSet<int> _unlocked = new();
-    private int _next = 1;
+    private List<string> _weak = new();
+    private int _next = 1, _ability;
+    private bool _hasData;
     private string _ctaText = "Empezar nivel 1";
 
     protected override async Task OnInitializedAsync()
@@ -72,5 +98,16 @@
         _ctaText = _best.GetValueOrDefault(_next, -1) >= 0
             ? $"Continuar con el nivel {_next}"
             : $"Empezar nivel {_next}";
+
+        var mastery = await Progress.GetMasteryAsync();
+        _hasData = mastery.Count > 0;
+        _ability = (int)Math.Round(await Progress.GetAbilityAsync());
+        _weak = mastery.Where(kv => kv.Value < 65).OrderBy(kv => kv.Value).Take(3).Select(kv => kv.Key).ToList();
+    }
+
+    private async Task Logout()
+    {
+        await Auth.SignOutAsync();
+        Nav.NavigateTo("login", forceLoad: true);
     }
 }

@@ -314,3 +314,29 @@ code.inline { font-family: var(--mono); background: rgba(58, 31, 18, .08); paddi
 .test.bad { background: var(--wrong-bg); }
 .test.bad .mark { color: var(--wrong); }
 .test .detail { margin-top: .3rem; color: #6b3b2c; }
+
+/* ---------- Login, registro y dominio ---------- */
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; background: var(--pill); border-radius: 14px; padding: .3rem; margin-bottom: 1.1rem; }
+.tab { border: 0; cursor: pointer; font: inherit; font-weight: 700; color: var(--muted); background: transparent; border-radius: 11px; padding: .55rem; transition: background .15s ease, color .15s ease; }
+.tab.on { background: #fff; color: var(--ink); box-shadow: 0 2px 6px rgba(58, 31, 18, .12); }
+
+.why { margin: 0 0 .8rem; padding-left: 1.1rem; }
+.why li { margin-bottom: .4rem; }
+.small { font-size: .85rem; }
+
+.cta.google { display: flex; align-items: center; justify-content: center; gap: .6rem; }
+.cta .g {
+    display: grid; place-items: center; width: 1.7rem; height: 1.7rem; border-radius: 50%;
+    background: #fff; color: #c9811a; font-weight: 800; font-size: 1rem;
+}
+
+.exit {
+    margin-left: auto; border: 0; cursor: pointer; font: inherit; font-size: .85rem; font-weight: 700;
+    color: var(--ink); background: rgba(58, 31, 18, .14); border-radius: 99px; padding: .25rem .8rem;
+}
+.exit:hover { background: rgba(58, 31, 18, .26); }
+
+.mastery { background: var(--pill); border-radius: 16px; padding: .9rem 1rem .5rem; margin-bottom: 1.2rem; }
+.mastery-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .5rem; font-weight: 600; }
+.meter { height: 10px; border-radius: 99px; background: #fff; overflow: hidden; margin-bottom: .7rem; }
+.meter span { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--honey), var(--ember)); transition: width .6s ease; }
