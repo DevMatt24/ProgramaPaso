@@ -14,4 +14,7 @@ builder.Services.AddScoped<ProgramaPaso.Domain.QuizEngine>();
 builder.Services.AddScoped<ProgramaPaso.Services.SoundService>();
 builder.Services.AddScoped<ProgramaPaso.Services.ProgressService>();
 
+
+builder.Services.AddScoped<ProgramaPaso.Services.CodeRunnerService>();
+
 await builder.Build().RunAsync();

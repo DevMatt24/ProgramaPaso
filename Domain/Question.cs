@@ -6,7 +6,8 @@ public class Question
     public string Topic { get; set; } = "";
     public int Level { get; set; }
 
-    // "choice" (elegir), "fill" (completar/escribir), "order" (ordenar líneas) o "bug" (marcar líneas con error)
+    // "choice" (elegir), "fill" (completar/escribir), "order" (ordenar líneas),
+    // "bug" (marcar líneas con error) o "code" (escribir/corregir código con pruebas)
     public string Type { get; set; } = "choice";
 
     public string Prompt { get; set; } = "";
@@ -25,6 +26,14 @@ public class Question
     // bug: números de línea con error, contando desde 1
     public List<int> BugLines { get; set; } = new();
 
+    // code: enunciado largo, método a probar, pruebas, pistas y solución de referencia.
+    // En "code", Code es el código inicial que ve el alumno.
+    public string Statement { get; set; } = "";
+    public string Method { get; set; } = "";
+    public List<CodeTest> Tests { get; set; } = new();
+    public List<CodeHint> Hints { get; set; } = new();
+    public string Solution { get; set; } = "";
+
     public string Explanation { get; set; } = "";
     public string Example { get; set; } = "";
 
@@ -33,6 +42,7 @@ public class Question
         "fill" => Answers.FirstOrDefault() ?? "",
         "order" => string.Join("\n", Lines),
         "bug" => FormatLines(BugLines),
+        "code" => Solution,
         _ => Correct >= 0 && Correct < Options.Count ? Options[Correct] : ""
     };
 
@@ -43,12 +53,16 @@ public class Question
         => numbers.Count == 1 ? $"Línea {numbers.First()}" : $"Líneas {string.Join(", ", numbers)}";
 }
 
-public record AnswerResult(Question Question, string Given, bool IsCorrect);
+// Fraction: parte del puntaje que se lleva (0 a 1). -1 = todo o nada según IsCorrect.
+public record AnswerResult(Question Question, string Given, bool IsCorrect, double Fraction = -1, int HintsUsed = 0)
+{
+    public double Earned => Fraction >= 0 ? Fraction : (IsCorrect ? 1 : 0);
+}
 
 public record QuizResult(List<AnswerResult> Answers)
 {
     public int Score => Answers.Count == 0 ? 0
-        : (int)Math.Round(Answers.Count(a => a.IsCorrect) * 100.0 / Answers.Count);
+        : (int)Math.Round(Answers.Sum(a => a.Earned) * 100.0 / Answers.Count);
 
     public IEnumerable<AnswerResult> Mistakes => Answers.Where(a => !a.IsCorrect);
     public bool Passed(int minimum = 70) => Score >= minimum;

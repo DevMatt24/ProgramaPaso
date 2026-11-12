@@ -6,6 +6,7 @@
 @inject QuizEngine Engine
 @inject SoundService Sound
 @inject ProgressService Progress
+@inject CodeRunnerService Runner
 @inject NavigationManager Nav
 
 <PageTitle>Nivel @_level · ProgramaPaso</PageTitle>
@@ -60,6 +61,75 @@ else if (_result is null)
                             <pre class="code">@q.Code</pre>
                         }
                         <input class="@inputClass standalone" @bind="_text" @bind:event="oninput" @onkeydown="OnKey" @ref="_input" disabled="@_answered" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Escribí tu respuesta" aria-label="Tu respuesta" />
+                    }
+                    break;
+                }
+                case "code":
+                {
+                    <div class="statement">@q.Statement</div>
+
+                    if (_hintsShown > 0)
+                    {
+                        <div class="hints">
+                            @for (int h = 0; h < _hintsShown; h++)
+                            {
+                                var hint = q.Hints[h];
+                                <div class="hint-card">
+                                    <strong>Pista @(h + 1) · @hint.Title <span class="cost">−@(hint.Cost)%</span></strong>
+                                    <p>@hint.Text</p>
+                                    @if (!string.IsNullOrWhiteSpace(hint.Code))
+                                    {
+                                        <pre class="code small">@hint.Code</pre>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    if (!_answered && _hintsShown < q.Hints.Count)
+                    {
+                        var next = q.Hints[_hintsShown];
+                        <button class="hint-btn" @onclick="ShowHint">💡 Pedir pista @(_hintsShown + 1): @next.Title (−@(next.Cost)% de este reto)</button>
+                    }
+
+                    <textarea class="code-editor" @bind="_codeText" @bind:event="oninput" disabled="@_answered"
+                              spellcheck="false" autocapitalize="none" autocomplete="off" aria-label="Tu código"></textarea>
+
+                    if (_running)
+                    {
+                        <p class="muted">Ejecutando pruebas…</p>
+                    }
+                    if (_run is not null && !_running)
+                    {
+                        <div class="run" @ref="_runBox" tabindex="-1">
+                            @if (_run.Fatal is not null)
+                            {
+                                <p class="issue">@_run.Fatal</p>
+                            }
+                            @foreach (var issue in _run.Issues)
+                            {
+                                <p class="issue">Línea @issue.Line: @issue.Message</p>
+                            }
+                            @if (_run.Tests.Count > 0)
+                            {
+                                <p class="run-title">Pruebas superadas: @_run.Tests.Count(x => x.Ok) de @_run.Tests.Count</p>
+                            }
+                            @for (int t = 0; t < Math.Min(_run.Tests.Count, q.Tests.Count); t++)
+                            {
+                                var tr = _run.Tests[t];
+                                var tc = q.Tests[t];
+                                <div class="test @(tr.Ok ? "ok" : "bad")">
+                                    <span class="mark">@(tr.Ok ? "✓" : "✗")</span>
+                                    <div>
+                                        <code>@TestLabel(q, tc)</code>
+                                        @if (!tr.Ok)
+                                        {
+                                            <div class="detail">Esperado: <code class="inline">@tc.Expected.GetRawText()</code> · Obtuviste: <code class="inline">@(tr.Error ?? tr.Got)</code></div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     }
                     break;
                 }
@@ -142,6 +212,11 @@ else if (_result is null)
                         <p>Con error: <code class="inline">@q.CorrectText</code></p>
                     }
                     <p>@q.Explanation</p>
+                    @if (q.Type == "code")
+                    {
+                        <p>Una forma de resolverlo:</p>
+                        <pre class="code small">@q.Solution</pre>
+                    }
                     @if (!string.IsNullOrWhiteSpace(q.Example))
                     {
                         <pre class="code small">@q.Example</pre>
@@ -152,6 +227,10 @@ else if (_result is null)
 
         <footer class="q-foot">
             <button class="cta" disabled="@CtaDisabled(q)" @onclick="OnCta">@CtaText(q)</button>
+            @if (q.Type == "code" && !_answered)
+            {
+                <button class="link-btn" @onclick="GiveUp">Rendirme y ver la solución (0 puntos en este reto)</button>
+            }
             <div class="live">
                 <span class="dot @(_streak > 0 ? "on" : "")"></span>
                 @(_streak > 0 ? $"Racha de {_streak}" : "Sin racha todavía")
@@ -162,6 +241,7 @@ else if (_result is null)
 else
 {
     var correct = _result.Answers.Count(a => a.IsCorrect);
+    var hintsUsed = _result.Answers.Sum(a => a.HintsUsed);
     var passed = _result.Passed(ProgressService.PassMark);
     var hasNext = passed && _level < Curriculum.AvailableLevels;
 
@@ -172,7 +252,7 @@ else
                 <span class="brand">Resultado · Nivel @_level</span>
             </div>
             <h2 class="prompt">@ResultTitle()</h2>
-            <p class="sub">@correct de @_result.Answers.Count correctas · mejor racha: @_bestStreak</p>
+            <p class="sub">@correct de @_result.Answers.Count correctas@(hintsUsed > 0 ? $" · pistas usadas: {hintsUsed}" : "")@(_result.Answers.Any(a => a.Question.Type == "code") ? "" : $" · mejor racha: {_bestStreak}")</p>
         </header>
 
         <div class="q-body">
@@ -195,6 +275,12 @@ else
                             <pre class="code small">@m.Given</pre>
                             <p class="right-line">Orden correcto:</p>
                             <pre class="code small">@m.Question.CorrectText</pre>
+                        }
+                        else if (m.Question.Type == "code")
+                        {
+                            <p class="wrong-line">Este reto quedó sin resolver.</p>
+                            <p class="right-line">Una forma de resolverlo:</p>
+                            <pre class="code small">@m.Question.Solution</pre>
                         }
                         else if (m.Question.Type == "bug")
                         {
@@ -252,6 +338,11 @@ else
     private int[] _lineOrder = Array.Empty<int>();   // order: orden mezclado de líneas
     private readonly List<int> _picked = new();      // order: líneas elegidas por el usuario
     private readonly HashSet<int> _bugSel = new();   // bug: líneas marcadas (índice desde 0)
+    private string _codeText = "";                   // code: lo que el alumno escribe
+    private int _hintsShown;                         // code: pistas ya pedidas
+    private bool _running, _scrollToRun;
+    private CodeRunResult? _run;
+    private ElementReference _runBox;
     private string _text = "";                       // fill: texto escrito
     private int _level, _index, _pick, _streak, _bestStreak;
     private bool _answered, _scrollToFeedback, _focusInput, _muted;
@@ -284,7 +375,13 @@ else
         if (_scrollToFeedback)
         {
             _scrollToFeedback = false;
+            _scrollToRun = false;
             try { await _feedback.FocusAsync(); } catch { }
+        }
+        else if (_scrollToRun)
+        {
+            _scrollToRun = false;
+            try { await _runBox.FocusAsync(); } catch { }
         }
         else if (_focusInput)
         {
@@ -311,6 +408,10 @@ else
         _text = "";
         _picked.Clear();
         _bugSel.Clear();
+        _codeText = q.Type == "code" ? q.Code : "";
+        _hintsShown = 0;
+        _run = null;
+        _running = false;
 
         // Mezcla opciones/líneas para que no se memorice la posición
         _order = Enumerable.Range(0, q.Options.Count).OrderBy(_ => _rng.Next()).ToArray();
@@ -349,25 +450,25 @@ else
         await Resolve(q, string.Join("\n", given), given.SequenceEqual(q.Lines));
     }
 
-    private async Task Resolve(Question q, string given, bool ok)
+    private async Task Resolve(Question q, string given, bool ok, double fraction = -1, int hints = 0, string? praise = null)
     {
         _answered = true;
         _scrollToFeedback = true;
         _marks[_index] = ok;
-        _answers[_index] = new AnswerResult(q, given, ok);
+        _answers[_index] = new AnswerResult(q, given, ok, fraction, hints);
 
         if (ok)
         {
             _streak++;
             _bestStreak = Math.Max(_bestStreak, _streak);
             var list = _streak >= 3 ? StreakPraises : Praises;
-            _praise = list[_rng.Next(list.Length)];
+            _praise = praise ?? list[_rng.Next(list.Length)];
             await Sound.PlayAsync(_streak >= 3 ? "streak" : "right");
         }
         else
         {
             _streak = 0;
-            _praise = "Casi. Mirá por qué:";
+            _praise = praise ?? "Casi. Mirá por qué:";
             await Sound.PlayAsync("wrong");
         }
     }
@@ -385,6 +486,55 @@ else
         _picked.RemoveAt(position);
         await Sound.PlayAsync("tap");
     }
+
+    private async Task ShowHint()
+    {
+        var q = _quiz![_index];
+        if (_answered || _running || _hintsShown >= q.Hints.Count) return;
+        _hintsShown++;
+        await Sound.PlayAsync("tap");
+    }
+
+    private int HintCost(Question q) => q.Hints.Take(_hintsShown).Sum(h => h.Cost);
+
+    private async Task RunCode()
+    {
+        var q = _quiz![_index];
+        if (_answered || _running) return;
+
+        _running = true;
+        _run = null;
+        StateHasChanged();
+
+        _run = await Runner.RunAsync(_codeText, q.Method, q.Tests);
+        _running = false;
+
+        if (_run.AllPassed)
+        {
+            var cost = HintCost(q);
+            var message = cost == 0
+                ? "¡Todas las pruebas pasaron!"
+                : $"¡Pruebas superadas! Las pistas te costaron el {cost}% de este reto.";
+            await Resolve(q, _codeText, true, Math.Max(0, 1 - cost / 100.0), _hintsShown, message);
+        }
+        else
+        {
+            _scrollToRun = true;
+            await Sound.PlayAsync("wrong");
+        }
+    }
+
+    private async Task GiveUp()
+    {
+        var q = _quiz![_index];
+        if (_answered || _running) return;
+        await Resolve(q, _codeText, false, 0, _hintsShown, "Veamos cómo se resuelve:");
+    }
+
+    private static string TestLabel(Question q, CodeTest t)
+        => !string.IsNullOrWhiteSpace(t.Label)
+            ? t.Label
+            : $"{q.Method}({string.Join(", ", t.Args.Select(a => a.GetRawText()))})";
 
     private async Task ToggleBug(int index)
     {
@@ -417,6 +567,7 @@ else
         "fill" => "Completar",
         "order" => "Ordenar",
         "bug" => "Depurar",
+        "code" => "Reto",
         _ => ""
     };
 
@@ -432,12 +583,14 @@ else
         "fill" => !_answered && string.IsNullOrWhiteSpace(_text),
         "order" => !_answered && _picked.Count < q.Lines.Count,
         "bug" => !_answered && _bugSel.Count == 0,
+        "code" => _running,
         _ => !_answered
     };
 
     private string CtaText(Question q)
     {
         if (_answered) return _index + 1 < _quiz!.Count ? "Siguiente" : "Ver mi resultado";
+        if (q.Type == "code") return _running ? "Ejecutando…" : "Ejecutar pruebas";
         return q.Type == "choice" ? "Elegí una respuesta" : "Comprobar";
     }
 
@@ -448,6 +601,7 @@ else
         if (q.Type == "fill") await CheckFill();
         else if (q.Type == "order") await CheckOrder();
         else if (q.Type == "bug") await CheckBug();
+        else if (q.Type == "code") await RunCode();
     }
 
     private async Task Next()

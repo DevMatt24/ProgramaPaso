@@ -7,6 +7,9 @@ public class QuizEngine
     // Garantiza que aparezcan ejercicios interactivos (completar/ordenar) mezclados con los de opción
     public List<Question> BuildQuiz(List<Question> pool, int count)
     {
+        // Nivel de retos: van en el orden del archivo (de menos a más difícil)
+        if (pool.Any(q => q.Type == "code")) return pool.Take(count).ToList();
+
         var interactive = pool.Where(q => q.Type != "choice")
             .OrderBy(_ => _rng.Next())
             .Take(Math.Min(3, count / 2))

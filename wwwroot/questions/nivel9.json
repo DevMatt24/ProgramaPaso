@@ -1,0 +1,566 @@
+[
+  {
+    "id": "cod-001",
+    "topic": "Corregir",
+    "type": "code",
+    "level": 9,
+    "method": "ContarObjeto",
+    "prompt": "Reto 1 · Corregí ContarObjeto",
+    "statement": "Este método debe contar cuántas veces aparece buscado dentro del vector objetos.\nTiene 4 errores, de sintaxis y de lógica. Corregilos y ejecutá las pruebas.\n\nEjemplo: objetos = { \"espada\", \"escudo\", \"espada\" } y buscado = \"espada\"  →  2",
+    "code": "static int ContarObjeto(string[] objetos, string buscado)\n{\n    int cont = 0;\n    for (int i = 0; i <= objetos.Length; i++)\n    {\n        if (objetos[i] = buscado)\n            cont = 1\n    }\n    return cont;\n}",
+    "solution": "static int ContarObjeto(string[] objetos, string buscado)\n{\n    int cont = 0;\n    for (int i = 0; i < objetos.Length; i++)\n    {\n        if (objetos[i] == buscado)\n            cont++;\n    }\n    return cont;\n}",
+    "tests": [
+      {
+        "args": [
+          [
+            "espada",
+            "escudo",
+            "espada"
+          ],
+          "espada"
+        ],
+        "expected": 2
+      },
+      {
+        "args": [
+          [
+            "espada",
+            "escudo",
+            "espada"
+          ],
+          "pocion"
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          [
+            "mapa"
+          ],
+          "mapa"
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          [
+            "a",
+            "b",
+            "a",
+            "a"
+          ],
+          "a"
+        ],
+        "expected": 3
+      },
+      {
+        "args": [
+          [],
+          "x"
+        ],
+        "expected": 0
+      }
+    ],
+    "hints": [
+      {
+        "title": "Empezá por lo que el compilador no acepta",
+        "text": "Mirá que cada instrucción termine en ; y cómo se compara dentro de un if.",
+        "cost": 10
+      },
+      {
+        "title": "Después, la lógica",
+        "text": "¿Hasta dónde debe llegar i? El último índice válido es Length - 1. Y para contar, ¿alcanza con asignar 1 o hay que sumar?",
+        "cost": 20
+      },
+      {
+        "title": "Los 4 errores",
+        "text": "(1) Falta el ; después de cont = 1. (2) En el if se compara con ==, no con =. (3) La condición del for debe ser i < objetos.Length. (4) El contador debe sumar: cont++ en lugar de cont = 1.",
+        "cost": 35
+      }
+    ],
+    "explanation": "Dos errores eran de sintaxis (el ; y el = en la condición) y dos de lógica (el <= que se pasa del vector y el contador que no acumulaba)."
+  },
+  {
+    "id": "cod-002",
+    "topic": "Vectores paralelos",
+    "type": "code",
+    "level": 9,
+    "method": "SumarValor",
+    "prompt": "Reto 2 · Escribí SumarValor",
+    "statement": "Los vectores objetos y valores están relacionados por posición: valores[i] es el valor de objetos[i].\nEscribí SumarValor: recibe ambos vectores y un objeto buscado, y devuelve la suma de los valores de todas las posiciones donde aparece buscado (0 si no aparece).\n\nEjemplo: objetos = { \"espada\", \"escudo\", \"espada\" }, valores = { 50, 30, 70 }, buscado = \"espada\"  →  120",
+    "code": "static int SumarValor(string[] objetos, int[] valores, string buscado)\n{\n    // tu código acá\n}",
+    "solution": "static int SumarValor(string[] objetos, int[] valores, string buscado)\n{\n    int total = 0;\n    for (int i = 0; i < objetos.Length; i++)\n    {\n        if (objetos[i] == buscado)\n            total += valores[i];\n    }\n    return total;\n}",
+    "tests": [
+      {
+        "args": [
+          [
+            "espada",
+            "escudo",
+            "espada"
+          ],
+          [
+            50,
+            30,
+            70
+          ],
+          "espada"
+        ],
+        "expected": 120
+      },
+      {
+        "args": [
+          [
+            "espada",
+            "escudo",
+            "espada"
+          ],
+          [
+            50,
+            30,
+            70
+          ],
+          "escudo"
+        ],
+        "expected": 30
+      },
+      {
+        "args": [
+          [
+            "espada",
+            "escudo",
+            "espada"
+          ],
+          [
+            50,
+            30,
+            70
+          ],
+          "pocion"
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          [
+            "mapa",
+            "mapa"
+          ],
+          [
+            2,
+            3
+          ],
+          "mapa"
+        ],
+        "expected": 5
+      },
+      {
+        "args": [
+          [],
+          [],
+          "x"
+        ],
+        "expected": 0
+      }
+    ],
+    "hints": [
+      {
+        "title": "Idea general",
+        "text": "Es parecido a contar: recorrés objetos y preguntás si objetos[i] es igual a buscado. Lo que cambia es qué hacés cuando coincide.",
+        "cost": 10
+      },
+      {
+        "title": "Paso a paso",
+        "text": "Necesitás un acumulador que empiece en 0. Si hay coincidencia, le sumás valores[i] (la misma posición i). Al terminar el recorrido, devolvés el acumulador.",
+        "cost": 20
+      },
+      {
+        "title": "Esqueleto",
+        "text": "Completá los huecos:",
+        "cost": 35,
+        "code": "int total = 0;\nfor (int i = 0; i < objetos.Length; i++)\n{\n    if (objetos[i] == ___)\n        total += ___;\n}\nreturn ___;"
+      }
+    ],
+    "explanation": "El patrón es recorrido + condición + acumulador. La clave es usar el mismo índice i en los dos vectores."
+  },
+  {
+    "id": "cod-003",
+    "topic": "Cadenas",
+    "type": "code",
+    "level": 9,
+    "method": "Normalizar",
+    "prompt": "Reto 3 · Escribí Normalizar",
+    "statement": "Escribí Normalizar: recibe lo que escribió el usuario y devuelve el texto sin espacios al principio ni al final y en minúsculas.\nSi después de limpiarlo no queda nada, devuelve \"ENTRADA INVALIDA\".\n\nEjemplos:  \"  Mapa \"  →  \"mapa\"      \"   \"  →  \"ENTRADA INVALIDA\"",
+    "code": "static string Normalizar(string entrada)\n{\n    // tu código acá\n}",
+    "solution": "static string Normalizar(string entrada)\n{\n    string limpio = entrada.Trim().ToLower();\n    if (limpio == \"\")\n        return \"ENTRADA INVALIDA\";\n    return limpio;\n}",
+    "tests": [
+      {
+        "args": [
+          "  Mapa "
+        ],
+        "expected": "mapa"
+      },
+      {
+        "args": [
+          "ESPADA"
+        ],
+        "expected": "espada"
+      },
+      {
+        "args": [
+          "   "
+        ],
+        "expected": "ENTRADA INVALIDA"
+      },
+      {
+        "args": [
+          ""
+        ],
+        "expected": "ENTRADA INVALIDA"
+      },
+      {
+        "args": [
+          " Salir  "
+        ],
+        "expected": "salir"
+      }
+    ],
+    "hints": [
+      {
+        "title": "Idea general",
+        "text": "Son dos pasos: primero limpiar el texto y después decidir qué devolver según si quedó vacío o no.",
+        "cost": 10
+      },
+      {
+        "title": "Paso a paso",
+        "text": "Guardá entrada.Trim().ToLower() en una variable (los strings no se modifican: hay que guardar el resultado). Después preguntá si esa variable es igual a \"\".",
+        "cost": 20
+      },
+      {
+        "title": "Esqueleto",
+        "text": "Completá los huecos:",
+        "cost": 35,
+        "code": "string limpio = entrada.___().___();\nif (limpio == ___)\n    return \"ENTRADA INVALIDA\";\nreturn ___;"
+      }
+    ],
+    "explanation": "Normalizar siempre va antes de comparar. Si no, \"  SALIR \" nunca sería igual a \"salir\"."
+  },
+  {
+    "id": "cod-004",
+    "topic": "Búsqueda",
+    "type": "code",
+    "level": 9,
+    "method": "PosicionDe",
+    "prompt": "Reto 4 · Escribí PosicionDe",
+    "statement": "Escribí PosicionDe: devuelve la posición (índice) de la primera vez que aparece buscado en objetos. Si no está, devuelve -1.\n\nEjemplo: objetos = { \"mapa\", \"espada\", \"escudo\" } y buscado = \"espada\"  →  1",
+    "code": "static int PosicionDe(string[] objetos, string buscado)\n{\n    // tu código acá\n}",
+    "solution": "static int PosicionDe(string[] objetos, string buscado)\n{\n    for (int i = 0; i < objetos.Length; i++)\n    {\n        if (objetos[i] == buscado)\n            return i;\n    }\n    return -1;\n}",
+    "tests": [
+      {
+        "args": [
+          [
+            "mapa",
+            "espada",
+            "escudo"
+          ],
+          "espada"
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          [
+            "mapa",
+            "espada",
+            "escudo"
+          ],
+          "pocion"
+        ],
+        "expected": -1
+      },
+      {
+        "args": [
+          [
+            "a",
+            "b",
+            "a"
+          ],
+          "a"
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          [],
+          "x"
+        ],
+        "expected": -1
+      },
+      {
+        "args": [
+          [
+            "x"
+          ],
+          "x"
+        ],
+        "expected": 0
+      }
+    ],
+    "hints": [
+      {
+        "title": "Idea general",
+        "text": "Recorré el vector. En cuanto encuentres el objeto ya sabés la respuesta: no hace falta seguir.",
+        "cost": 10
+      },
+      {
+        "title": "Paso a paso",
+        "text": "Dentro del for, si objetos[i] == buscado hacé return i. Si el for termina sin encontrarlo, devolvé -1 después del bucle.",
+        "cost": 20
+      },
+      {
+        "title": "Esqueleto",
+        "text": "Completá los huecos:",
+        "cost": 35,
+        "code": "for (int i = 0; i < objetos.Length; i++)\n{\n    if (___)\n        return ___;\n}\nreturn ___;"
+      }
+    ],
+    "explanation": "Un return dentro del bucle corta todo en el primer acierto. El -1 solo se devuelve si el bucle termina sin encontrar nada."
+  },
+  {
+    "id": "cod-005",
+    "topic": "Corregir",
+    "type": "code",
+    "level": 9,
+    "method": "Entrenar",
+    "prompt": "Reto 5 · Corregí Entrenar",
+    "statement": "Entrenamiento: empieza con 3 vidas, 0 puntos y 0 turnos. En cada turno se procesa un evento: «gana» suma 10 puntos y «pierde» resta 1 vida.\nTermina al llegar a 40 puntos, al quedarse sin vidas o al completar 5 turnos (si pasan dos cosas a la vez, vale la primera de esa lista).\nEntrenar devuelve: motivo, puntos, vidas y turnos, separados por un espacio. El motivo es puntos, vidas o turnos.\n\nEjemplo: gana, gana, gana, gana, pierde  →  \"puntos 40 3 4\"\n\nEl código tiene 5 errores. Corregilos.",
+    "code": "static string Entrenar(string[] eventos)\n{\n    int vidas = 3;\n    int puntos = 0;\n    int turnos = 0;\n    string motivo = \"\"\n    int i = 0;\n    while (motivo == \"\")\n    {\n        turnos++;\n        if (eventos[i] = \"gana\")\n            puntos += 1;\n        else if (eventos[i] == \"pierde\")\n            vidas++;\n        if (puntos >= 40)\n            motivo = \"puntos\";\n        else if (vidas == 0)\n            motivo = \"vidas\";\n        else if (turnos == 5)\n            motivo = \"turnos\";\n    }\n    return motivo + \" \" + puntos + \" \" + vidas + \" \" + turnos;\n}",
+    "solution": "static string Entrenar(string[] eventos)\n{\n    int vidas = 3;\n    int puntos = 0;\n    int turnos = 0;\n    string motivo = \"\";\n    int i = 0;\n    while (motivo == \"\")\n    {\n        turnos++;\n        if (eventos[i] == \"gana\")\n            puntos += 10;\n        else if (eventos[i] == \"pierde\")\n            vidas--;\n        if (puntos >= 40)\n            motivo = \"puntos\";\n        else if (vidas == 0)\n            motivo = \"vidas\";\n        else if (turnos == 5)\n            motivo = \"turnos\";\n        i++;\n    }\n    return motivo + \" \" + puntos + \" \" + vidas + \" \" + turnos;\n}",
+    "tests": [
+      {
+        "args": [
+          [
+            "gana",
+            "gana",
+            "gana",
+            "gana",
+            "pierde"
+          ]
+        ],
+        "expected": "puntos 40 3 4"
+      },
+      {
+        "args": [
+          [
+            "pierde",
+            "pierde",
+            "pierde",
+            "gana",
+            "gana"
+          ]
+        ],
+        "expected": "vidas 0 0 3"
+      },
+      {
+        "args": [
+          [
+            "gana",
+            "pierde",
+            "gana",
+            "pierde",
+            "gana"
+          ]
+        ],
+        "expected": "turnos 30 1 5"
+      },
+      {
+        "args": [
+          [
+            "gana",
+            "gana",
+            "pierde",
+            "gana",
+            "gana",
+            "gana"
+          ]
+        ],
+        "expected": "puntos 40 2 5"
+      },
+      {
+        "args": [
+          [
+            "pierde",
+            "gana",
+            "pierde",
+            "gana",
+            "pierde"
+          ]
+        ],
+        "expected": "vidas 20 0 5"
+      }
+    ],
+    "hints": [
+      {
+        "title": "Empezá por lo que el compilador no acepta",
+        "text": "Buscá un ; que falta y un = donde debería haber una comparación.",
+        "cost": 10
+      },
+      {
+        "title": "Seguí el código con el ejemplo",
+        "text": "Probalo a mano con gana, gana, gana, gana: ¿cuántos puntos suma cada «gana»? ¿qué hace «pierde» con las vidas? ¿qué pasa con i en cada vuelta del while?",
+        "cost": 20
+      },
+      {
+        "title": "Los 5 errores",
+        "text": "(1) Falta el ; después de motivo = \"\". (2) El if usa = en lugar de ==. (3) «gana» suma 10, no 1. (4) «pierde» debe restar: vidas--. (5) Falta i++ al final del while, y siempre se lee el mismo evento.",
+        "cost": 35
+      }
+    ],
+    "explanation": "Dos errores de sintaxis (; y =) y tres de lógica (puntos, vidas e índice). Para depurar, simulá a mano el ejemplo y compará con lo que dice el código."
+  },
+  {
+    "id": "cod-006",
+    "topic": "Integrador",
+    "type": "code",
+    "level": 9,
+    "method": "Consultar",
+    "prompt": "Reto 6 · Integrador: Consultar",
+    "statement": "Inventario de expedición: los vectores objetos y valores están relacionados por posición.\nEscribí Consultar, que recibe lo que escribió el usuario y devuelve:\n• \"ENTRADA INVALIDA\" si, después de normalizarla (Trim y ToLower), queda vacía.\n• \"FIN\" si escribió salir (con cualquier combinación de mayúsculas y espacios).\n• En otro caso, \"CANTIDAD: N | VALOR TOTAL: V\", donde N es cuántas veces está ese objeto y V la suma de sus valores (ambos 0 si no existe).\n\nLos nombres de objetos están en minúscula. ContarObjeto y SumarValor ya están hechos para que los uses.\nEjemplo: mapa  →  \"CANTIDAD: 2 | VALOR TOTAL: 5\"",
+    "code": "static int ContarObjeto(string[] objetos, string buscado)\n{\n    int cont = 0;\n    for (int i = 0; i < objetos.Length; i++)\n    {\n        if (objetos[i] == buscado)\n            cont++;\n    }\n    return cont;\n}\n\nstatic int SumarValor(string[] objetos, int[] valores, string buscado)\n{\n    int total = 0;\n    for (int i = 0; i < objetos.Length; i++)\n    {\n        if (objetos[i] == buscado)\n            total += valores[i];\n    }\n    return total;\n}\n\nstatic string Consultar(string[] objetos, int[] valores, string entrada)\n{\n    // tu código acá\n}",
+    "solution": "static int ContarObjeto(string[] objetos, string buscado)\n{\n    int cont = 0;\n    for (int i = 0; i < objetos.Length; i++)\n    {\n        if (objetos[i] == buscado)\n            cont++;\n    }\n    return cont;\n}\n\nstatic int SumarValor(string[] objetos, int[] valores, string buscado)\n{\n    int total = 0;\n    for (int i = 0; i < objetos.Length; i++)\n    {\n        if (objetos[i] == buscado)\n            total += valores[i];\n    }\n    return total;\n}\n\nstatic string Consultar(string[] objetos, int[] valores, string entrada)\n{\n    string e = entrada.Trim().ToLower();\n    if (e == \"\")\n        return \"ENTRADA INVALIDA\";\n    if (e == \"salir\")\n        return \"FIN\";\n    int cantidad = ContarObjeto(objetos, e);\n    int total = SumarValor(objetos, valores, e);\n    return \"CANTIDAD: \" + cantidad + \" | VALOR TOTAL: \" + total;\n}",
+    "tests": [
+      {
+        "args": [
+          [
+            "mapa",
+            "espada",
+            "mapa",
+            "pocion"
+          ],
+          [
+            2,
+            50,
+            3,
+            10
+          ],
+          "  MAPA "
+        ],
+        "expected": "CANTIDAD: 2 | VALOR TOTAL: 5",
+        "label": "Consultar(inventario, \"  MAPA \")"
+      },
+      {
+        "args": [
+          [
+            "mapa",
+            "espada",
+            "mapa",
+            "pocion"
+          ],
+          [
+            2,
+            50,
+            3,
+            10
+          ],
+          "pocion"
+        ],
+        "expected": "CANTIDAD: 1 | VALOR TOTAL: 10",
+        "label": "Consultar(inventario, \"pocion\")"
+      },
+      {
+        "args": [
+          [
+            "mapa",
+            "espada",
+            "mapa",
+            "pocion"
+          ],
+          [
+            2,
+            50,
+            3,
+            10
+          ],
+          "dragon"
+        ],
+        "expected": "CANTIDAD: 0 | VALOR TOTAL: 0",
+        "label": "Consultar(inventario, \"dragon\")"
+      },
+      {
+        "args": [
+          [
+            "mapa",
+            "espada",
+            "mapa",
+            "pocion"
+          ],
+          [
+            2,
+            50,
+            3,
+            10
+          ],
+          "   "
+        ],
+        "expected": "ENTRADA INVALIDA",
+        "label": "Consultar(inventario, \"   \")"
+      },
+      {
+        "args": [
+          [
+            "mapa",
+            "espada",
+            "mapa",
+            "pocion"
+          ],
+          [
+            2,
+            50,
+            3,
+            10
+          ],
+          "SALIR"
+        ],
+        "expected": "FIN",
+        "label": "Consultar(inventario, \"SALIR\")"
+      },
+      {
+        "args": [
+          [
+            "mapa",
+            "espada",
+            "mapa",
+            "pocion"
+          ],
+          [
+            2,
+            50,
+            3,
+            10
+          ],
+          " Salir  "
+        ],
+        "expected": "FIN",
+        "label": "Consultar(inventario, \" Salir  \")"
+      }
+    ],
+    "hints": [
+      {
+        "title": "Idea general",
+        "text": "Pensalo como tres decisiones en este orden: normalizar la entrada, ¿quedó vacía?, ¿es «salir»? Solo si no pasó ninguna, consultás el inventario.",
+        "cost": 10
+      },
+      {
+        "title": "Paso a paso",
+        "text": "Normalizá una sola vez con Trim().ToLower() y guardalo en una variable. Con if devolvé ENTRADA INVALIDA y FIN. Al final usá ContarObjeto y SumarValor con la entrada ya normalizada y armá el texto con +.",
+        "cost": 20
+      },
+      {
+        "title": "Esqueleto",
+        "text": "Completá los huecos:",
+        "cost": 35,
+        "code": "string e = entrada.___().___();\nif (e == \"\")\n    return \"ENTRADA INVALIDA\";\nif (e == \"salir\")\n    return ___;\nint cantidad = ContarObjeto(objetos, ___);\nint total = SumarValor(objetos, valores, ___);\nreturn \"CANTIDAD: \" + cantidad + \" | VALOR TOTAL: \" + ___;"
+      }
+    ],
+    "explanation": "Reuniste todo el curso: normalizar, validar, buscar en vectores paralelos y devolver un resultado con formato. Este es el esquema del Ejercicio 2 del parcial."
+  }
+]

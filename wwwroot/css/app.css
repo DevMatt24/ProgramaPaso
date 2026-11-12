@@ -277,3 +277,40 @@ code.inline { font-family: var(--mono); background: rgba(58, 31, 18, .08); paddi
 .bugline.hit { border-color: var(--right); background: rgba(47, 179, 107, .3); }
 .bugline.missed { border-color: var(--honey); border-style: dashed; background: rgba(245, 165, 36, .14); }
 .bugline.wrong { border-color: var(--wrong); background: rgba(224, 57, 79, .3); animation: shake .35s ease; }
+
+/* ---------- Retos de código ---------- */
+.statement { white-space: pre-line; background: var(--pill); border-radius: 14px; padding: .9rem 1rem; margin-bottom: 1rem; font-size: .95rem; }
+
+.hint-btn {
+    display: block; width: 100%; text-align: left; cursor: pointer; font: inherit; font-size: .9rem; font-weight: 600;
+    background: transparent; color: var(--ink); border: 2px dashed var(--honey-deep); border-radius: 14px;
+    padding: .65rem .9rem; margin-bottom: 1rem;
+}
+.hint-btn:hover { background: rgba(245, 165, 36, .12); }
+
+.hints { display: grid; gap: .6rem; margin-bottom: 1rem; }
+.hint-card { background: #fff0d4; border-radius: 14px; padding: .8rem 1rem .2rem; animation: enter .3s ease; }
+.hint-card strong { display: block; margin-bottom: .3rem; font-size: .92rem; }
+.hint-card .cost { color: #a8650c; font-weight: 700; margin-left: .3rem; }
+.hint-card p { font-size: .92rem; }
+
+.code-editor {
+    display: block; width: 100%; min-height: 15rem; resize: vertical; overflow: auto; white-space: pre; tab-size: 4;
+    font-family: var(--mono); font-size: .85rem; line-height: 1.55;
+    background: #2b1618; color: #ffd9a8; caret-color: var(--honey);
+    border: 2px solid transparent; border-radius: 12px; padding: .8rem; margin-bottom: 1rem;
+}
+.code-editor:focus { outline: none; border-color: var(--honey); }
+.code-editor:disabled { opacity: .8; }
+
+.run { outline: none; margin-bottom: 1rem; animation: enter .3s ease; }
+.run-title { font-weight: 700; margin-bottom: .5rem; }
+.issue { background: var(--wrong-bg); color: #8f1f31; border-radius: 10px; padding: .55rem .8rem; margin-bottom: .45rem; font-size: .92rem; }
+.test { display: flex; gap: .7rem; align-items: flex-start; padding: .5rem .7rem; border-radius: 10px; margin-bottom: .4rem; font-size: .85rem; }
+.test code { font-family: var(--mono); word-break: break-word; }
+.test .mark { flex: none; font-weight: 800; }
+.test.ok { background: var(--right-bg); }
+.test.ok .mark { color: #17804a; }
+.test.bad { background: var(--wrong-bg); }
+.test.bad .mark { color: var(--wrong); }
+.test .detail { margin-top: .3rem; color: #6b3b2c; }
