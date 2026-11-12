@@ -38,42 +38,64 @@
     --top: 2.9rem;
 }
 
-/* ---------- Tema oscuro ---------- */
-/* 1) Automático: sigue al sistema, salvo que la persona haya elegido "claro" */
+
+/* ---------- Tema oscuro: Gris oliva ---------- */
+/* Automático: sigue al sistema, salvo elección de tema claro */
+
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
         color-scheme: dark;
-        --page: #1a110c;
-        --dots: #2b1e16;
-        --frame: #0b0604;
-        --ink: #f6e8d8;
-        --focus: #f6e8d8;
-        --muted: #b59c88;
-        --paper: #241812;
-        --pill: #33241b;
-        --pill-line: #46342a;
-        --right: #3cc47c;
-        --right-bg: #1c3a2a;
-        --right-ink: #6fdc9f;
-        --wrong: #ef5a6f;
-        --wrong-bg: #3f1e25;
-        --wrong-ink: #ff9aa8;
-        --warn-bg: #3d2c14;
-        --warn-ink: #f5b556;
-        --letter-bg: #46342a;
-        --field-focus: #2e2018;
-        --tab-on: #46342a;
-        --meter-bg: #46342a;
-        --code-bg: #150c0a;
-        --inline-code: rgba(255, 255, 255, .1);
-        --detail: #e0bfae;
-        --dot-off: #5a4637;
-        --off-bg: #3a2c22;
-        --off-ink: #8d7664;
-        --off-shadow: #2a1e16;
-        --shadow: rgba(0, 0, 0, .55);
+
+        /* Fondos */
+        --page: #20211D;
+        --dots: #292A25;
+        --frame: #191A17;
+        --paper: #2D2E28;
+
+        /* Textos */
+        --ink: #F0F0E9;
+        --focus: #FFFFFF;
+        --muted: #B5B6AA;
+        --detail: #D0D0C5;
+
+        /* Color principal */
+        --primary: #3B3C36;
+        --pill: #3B3C36;
+        --pill-line: #505149;
+        --letter-bg: #41423B;
+        --tab-on: #3B3C36;
+        --meter-bg: #505149;
+
+        /* Estados positivos */
+        --right: #8FAF91;
+        --right-bg: #29372B;
+        --right-ink: #A9C9AB;
+
+        /* Estados negativos */
+        --wrong: #D98282;
+        --wrong-bg: #3B2929;
+        --wrong-ink: #EBA3A3;
+
+        /* Advertencias */
+        --warn-bg: #3A3527;
+        --warn-ink: #D5B875;
+
+        /* Campos e interacción */
+        --field-focus: #34352F;
+        --code-bg: #24251F;
+        --inline-code: rgba(255, 255, 255, .08);
+
+        /* Elementos desactivados */
+        --dot-off: #62635A;
+        --off-bg: #30312B;
+        --off-ink: #929389;
+        --off-shadow: #24251F;
+
+        /* Sombras */
+        --shadow: rgba(0, 0, 0, .35);
     }
 }
+
 /* 2) Manual: cuando la persona elige "oscuro" con el botón */
 :root[data-theme="dark"] {
     color-scheme: dark;
