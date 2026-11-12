@@ -1,0 +1,22 @@
+@inject IJSRuntime JS
+
+<button class="mute" type="button" @onclick="Alternar"
+        aria-label="@(oscuro ? "Cambiar a tema claro" : "Cambiar a tema oscuro")">
+    @(oscuro ? "☀️" : "🌙")
+</button>
+
+@code {
+    private bool oscuro;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            oscuro = await JS.InvokeAsync<string>("tema.actual") == "dark";
+            StateHasChanged();
+        }
+    }
+
+    private async Task Alternar() =>
+        oscuro = await JS.InvokeAsync<string>("tema.alternar") == "dark";
+}

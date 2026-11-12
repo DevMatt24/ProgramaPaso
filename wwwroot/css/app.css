@@ -1,9 +1,11 @@
-/* ProgramaPaso · tarjeta de celular, tema cálido */
 :root {
+    color-scheme: light;
     --page: #fff1dc;
     --dots: #ecd0a8;
-    --frame: #3a1f12;
-    --ink: #3a1f12;
+    --frame: #3a1f12;        /* borde del marco */
+    --ink: #3a1f12;          /* texto principal */
+    --on-honey: #3a1f12;     /* texto sobre el color miel (igual en ambos temas) */
+    --focus: #3a1f12;
     --muted: #8a6e5c;
     --paper: #fffdf9;
     --pill: #f6eee4;
@@ -13,11 +15,97 @@
     --ember: #f58a3c;
     --right: #2fb36b;
     --right-bg: #ddf3e4;
+    --right-ink: #17804a;
     --wrong: #e0394f;
     --wrong-bg: #fbe0e4;
+    --wrong-ink: #8f1f31;
+    --warn-bg: #fff0d4;
+    --warn-ink: #a8650c;
+    --letter-bg: #fff;
+    --field-focus: #fff;
+    --tab-on: #fff;
+    --meter-bg: #fff;
+    --code-bg: #2b1618;
+    --inline-code: rgba(58, 31, 18, .08);
+    --detail: #6b3b2c;
+    --dot-off: #cdbba8;
+    --off-bg: #eadfd2;
+    --off-ink: #a58e7a;
+    --off-shadow: #d9ccbb;
+    --shadow: rgba(58, 31, 18, .25);
     --font: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
     --mono: "JetBrains Mono", Consolas, monospace;
-    --top: 2.9rem; /* espacio para el notch en PC */
+    --top: 2.9rem;
+}
+
+/* ---------- Tema oscuro ---------- */
+/* 1) Automático: sigue al sistema, salvo que la persona haya elegido "claro" */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --page: #1a110c;
+        --dots: #2b1e16;
+        --frame: #0b0604;
+        --ink: #f6e8d8;
+        --focus: #f6e8d8;
+        --muted: #b59c88;
+        --paper: #241812;
+        --pill: #33241b;
+        --pill-line: #46342a;
+        --right: #3cc47c;
+        --right-bg: #1c3a2a;
+        --right-ink: #6fdc9f;
+        --wrong: #ef5a6f;
+        --wrong-bg: #3f1e25;
+        --wrong-ink: #ff9aa8;
+        --warn-bg: #3d2c14;
+        --warn-ink: #f5b556;
+        --letter-bg: #46342a;
+        --field-focus: #2e2018;
+        --tab-on: #46342a;
+        --meter-bg: #46342a;
+        --code-bg: #150c0a;
+        --inline-code: rgba(255, 255, 255, .1);
+        --detail: #e0bfae;
+        --dot-off: #5a4637;
+        --off-bg: #3a2c22;
+        --off-ink: #8d7664;
+        --off-shadow: #2a1e16;
+        --shadow: rgba(0, 0, 0, .55);
+    }
+}
+/* 2) Manual: cuando la persona elige "oscuro" con el botón */
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #1a110c;
+    --dots: #2b1e16;
+    --frame: #0b0604;
+    --ink: #f6e8d8;
+    --focus: #f6e8d8;
+    --muted: #b59c88;
+    --paper: #241812;
+    --pill: #33241b;
+    --pill-line: #46342a;
+    --right: #3cc47c;
+    --right-bg: #1c3a2a;
+    --right-ink: #6fdc9f;
+    --wrong: #ef5a6f;
+    --wrong-bg: #3f1e25;
+    --wrong-ink: #ff9aa8;
+    --warn-bg: #3d2c14;
+    --warn-ink: #f5b556;
+    --letter-bg: #46342a;
+    --field-focus: #2e2018;
+    --tab-on: #46342a;
+    --meter-bg: #46342a;
+    --code-bg: #150c0a;
+    --inline-code: rgba(255, 255, 255, .1);
+    --detail: #e0bfae;
+    --dot-off: #5a4637;
+    --off-bg: #3a2c22;
+    --off-ink: #8d7664;
+    --off-shadow: #2a1e16;
+    --shadow: rgba(0, 0, 0, .55);
 }
 
 * { box-sizing: border-box; }
