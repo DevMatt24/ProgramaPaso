@@ -34,36 +34,63 @@ a { color: inherit; }
 .page {
     min-height: 100vh; min-height: 100dvh;
     display: flex; align-items: center; justify-content: center;
-    padding: 20px;
+    padding: 24px;
     background-color: var(--page);
     background-image: radial-gradient(var(--dots) 1.4px, transparent 1.4px);
     background-size: 24px 24px;
 }
 .phone {
     position: relative;
-    width: min(100%, 400px);
-    height: min(calc(100dvh - 40px), 820px);
+    width: min(100%, 1100px);              /* se estira con la ventana */
+    height: calc(100dvh - 48px);           /* ocupa todo el alto disponible */
     min-height: 560px;
     display: flex; flex-direction: column;
     background: var(--paper);
-    border: 10px solid var(--frame);
-    border-radius: 44px;
+    border: 8px solid var(--frame);
+    border-radius: 32px;
     overflow: hidden;
     box-shadow: 0 30px 60px rgba(58, 31, 18, .25);
 }
-.notch {
-    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-    width: 96px; height: 22px; border-radius: 99px; background: var(--frame); z-index: 5;
-}
+.notch { display: none; }                  /* el notch ya no tiene sentido en PC */
 .screen { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .loading { margin: auto; }
 
-/* En celular: una tarjeta con margen, sin marco */
+/* Tablet / PC chica: más aire y contenido centrado y legible */
+@media (min-width: 700px) {
+    :root { --top: 1.6rem; }
+    .q-head { padding: var(--top) 2.2rem 1.6rem; }
+    .q-body { padding: 1.6rem 2.2rem; }
+    .q-foot { padding: 1rem 2.2rem 1.3rem; }
+    .q-body > *, .q-foot > * { max-width: 680px; margin-left: auto; margin-right: auto; }
+    .code-editor { min-height: 20rem; }
+}
+
+/* PC: dos columnas (pregunta a la izquierda, respuestas a la derecha) */
+@media (min-width: 1000px) {
+    .screen:has(> .q-head) {
+        display: grid;
+        grid-template-columns: minmax(320px, 40%) 1fr;
+        grid-template-rows: minmax(0, 1fr) auto;
+    }
+    .screen:has(> .q-head) > .q-head {
+        grid-row: 1 / span 2;
+        padding: 2.4rem 2.6rem;
+        overflow-y: auto;
+    }
+    .screen:has(> .q-head) > .q-body { grid-column: 2; }
+    .screen:has(> .q-head) > .q-foot { grid-column: 2; }
+    .prompt { font-size: 2rem; }
+    .big-title { font-size: 2.4rem; }
+}
+
+/* Celular: una tarjeta con margen, sin marco */
 @media (max-width: 520px) {
     :root { --top: 1.2rem; }
     .page { padding: 12px; }
-    .phone { height: calc(100dvh - 24px); min-height: 0; border: 0; border-radius: 28px; box-shadow: 0 12px 30px rgba(58, 31, 18, .2); }
-    .notch { display: none; }
+    .phone { width: 100%; height: calc(100dvh - 24px); min-height: 0; border: 0; border-radius: 28px; box-shadow: 0 12px 30px rgba(58, 31, 18, .2); }
+    .q-head { padding: var(--top) 1.4rem 1.4rem; }
+    .q-body { padding: 1.25rem 1.4rem; }
+    .q-foot { padding: .9rem 1.4rem 1.1rem; }
 }
 
 /* ---------- Encabezado de color ---------- */
