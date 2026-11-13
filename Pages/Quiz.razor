@@ -42,7 +42,7 @@ else if (_result is null)
             <h2 class="prompt" @key="_index">@q.Prompt</h2>
         </header>
 
-        <div class="q-body @q.Type" @key="_index">
+        <div class="q-body type-@q.Type" @key="_index">
             @switch (q.Type)
             {
                 case "fill":

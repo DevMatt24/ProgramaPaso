@@ -47,7 +47,22 @@ public class AuthService
         _opt = opt;
     }
 
-    public bool IsConfigured => _opt.IsConfigured;
+    // Interruptor del login: false = la app funciona sin cuentas (progreso guardado en el navegador).
+    // Para activar las cuentas más adelante, cambialo a true y completá wwwroot/appsettings.json.
+    public const bool LoginEnabled = false;
+
+    public bool IsConfigured => LoginEnabled && _opt.IsConfigured;
+
+    // Para diagnóstico: muestra qué leyó de appsettings.json, sin exponer la clave
+    public string ConfigSummary
+    {
+        get
+        {
+            var url = string.IsNullOrWhiteSpace(_opt.Url) ? "vacía" : _opt.Url;
+            var key = string.IsNullOrWhiteSpace(_opt.AnonKey) ? "vacía" : $"{_opt.AnonKey.Length} caracteres";
+            return $"Url: {url} · Clave: {key}";
+        }
+    }
     public bool IsLoggedIn => _session is not null && UserId != "";
     public string UserId { get; private set; } = "";
     public string Email { get; private set; } = "";

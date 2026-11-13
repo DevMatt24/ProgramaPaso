@@ -22,6 +22,14 @@
     </header>
 
     <div class="q-body home">
+        @if (AuthService.LoginEnabled && !Auth.IsConfigured)
+        {
+            <div class="notice">
+                <strong>Modo local: todavía no hay login.</strong>
+                <p>Tu progreso se guarda solo en este navegador. Para activar las cuentas, completá Supabase en <code class="inline">wwwroot/appsettings.json</code>.</p>
+                <a href="login">Ver qué falta</a>
+            </div>
+        }
         @if (_hasData)
         {
             <div class="mastery">
