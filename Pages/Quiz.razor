@@ -20,7 +20,7 @@ else if (_result is null)
     var q = _quiz[_index];
     var ok = _marks[_index] == true;
 
-    <div class="screen @(_streak >= 3 ? "hot" : "")">
+    <div class="screen @((q.Type is "code" or "order") ? "wide" : "") @(_streak >= 3 ? "hot" : "")">
         <header class="q-head">
             <div class="bar">
                 <a class="back" href="" aria-label="Volver al inicio">‹</a>
@@ -31,6 +31,7 @@ else if (_result is null)
                         <span class="@cls"></span>
                     }
                 </div>
+                <ThemeToggle />
                 <button class="mute" @onclick="ToggleMute" aria-label="@(_muted ? "Activar sonido" : "Silenciar")">@(_muted ? "🔇" : "🔊")</button>
             </div>
             <span class="chip">@(q.Level == _level ? $"Nivel {_level}" : $"Repaso · nivel {q.Level}") · @q.Topic</span>
@@ -41,7 +42,7 @@ else if (_result is null)
             <h2 class="prompt" @key="_index">@q.Prompt</h2>
         </header>
 
-        <div class="q-body" @key="_index">
+        <div class="q-body @q.Type" @key="_index">
             @switch (q.Type)
             {
                 case "fill":
@@ -66,9 +67,11 @@ else if (_result is null)
                 }
                 case "code":
                 {
+                    <div class="code-grid">
+                    <div class="code-left">
                     <div class="statement">@q.Statement</div>
 
-                    if (_hintsShown > 0)
+                    @if (_hintsShown > 0)
                     {
                         <div class="hints">
                             @for (int h = 0; h < _hintsShown; h++)
@@ -86,20 +89,22 @@ else if (_result is null)
                         </div>
                     }
 
-                    if (!_answered && _hintsShown < q.Hints.Count)
+                    @if (!_answered && _hintsShown < q.Hints.Count)
                     {
                         var next = q.Hints[_hintsShown];
                         <button class="hint-btn" @onclick="ShowHint">💡 Pedir pista @(_hintsShown + 1): @next.Title (−@(next.Cost)% de este reto)</button>
                     }
 
+                    </div>
+                    <div class="code-right">
                     <textarea class="code-editor" @bind="_codeText" @bind:event="oninput" disabled="@_answered"
                               spellcheck="false" autocapitalize="none" autocomplete="off" aria-label="Tu código"></textarea>
 
-                    if (_running)
+                    @if (_running)
                     {
                         <p class="muted">Ejecutando pruebas…</p>
                     }
-                    if (_run is not null && !_running)
+                    @if (_run is not null && !_running)
                     {
                         <div class="run" @ref="_runBox" tabindex="-1">
                             @if (_run.Fatal is not null)
@@ -131,6 +136,8 @@ else if (_result is null)
                             }
                         </div>
                     }
+                    </div>
+                    </div>
                     break;
                 }
                 case "bug":
@@ -250,6 +257,7 @@ else
             <div class="bar">
                 <a class="back" href="" aria-label="Volver al inicio">‹</a>
                 <span class="brand">Resultado · Nivel @_level</span>
+                <ThemeToggle />
             </div>
             <h2 class="prompt">@ResultTitle()</h2>
             <p class="sub">@correct de @_result.Answers.Count correctas@(hintsUsed > 0 ? $" · pistas usadas: {hintsUsed}" : "")@(_result.Answers.Any(a => a.Question.Type == "code") ? "" : $" · mejor racha: {_bestStreak}")</p>

@@ -7,10 +7,11 @@
 
 <PageTitle>ProgramaPaso</PageTitle>
 
-<div class="screen">
+<div class="screen wide">
     <header class="q-head">
         <div class="bar">
             <span class="brand">ProgramaPaso</span>
+            <ThemeToggle />
             @if (Auth.IsLoggedIn)
             {
                 <button class="exit" @onclick="Logout">Salir</button>
@@ -20,7 +21,7 @@
         <p class="sub">Preguntas cortas, respuesta al instante y una explicación cuando te equivocás.</p>
     </header>
 
-    <div class="q-body">
+    <div class="q-body home">
         @if (_hasData)
         {
             <div class="mastery">

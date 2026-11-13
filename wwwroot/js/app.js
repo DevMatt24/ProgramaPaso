@@ -34,6 +34,21 @@ window.pp = (() => {
         get(key) { try { return localStorage.getItem(key); } catch { return null; } },
         set(key, value) { try { localStorage.setItem(key, value); } catch { } },
         remove(key) { try { localStorage.removeItem(key); } catch { } },
+        // Tema claro/oscuro: lo guardado por el usuario, o si no, el del sistema
+        effectiveTheme() {
+            try {
+                const saved = localStorage.getItem('pp_theme');
+                if (saved === 'dark' || saved === 'light') return saved;
+                return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            } catch { return 'light'; }
+        },
+        setTheme(theme) {
+            try {
+                if (theme !== 'dark' && theme !== 'light') return;
+                localStorage.setItem('pp_theme', theme);
+                document.documentElement.setAttribute('data-theme', theme);
+            } catch { }
+        },
         // Mensaje de error del login con Google (se lee una sola vez)
         takeAuthError() {
             try {
@@ -43,6 +58,14 @@ window.pp = (() => {
             } catch { return null; }
         }
     };
+})();
+
+// Aplica el tema elegido antes de que arranque Blazor
+(function applySavedTheme() {
+    try {
+        const t = localStorage.getItem('pp_theme');
+        if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+    } catch { }
 })();
 
 // Login con Google (Supabase): al volver de Google, los tokens llegan en el

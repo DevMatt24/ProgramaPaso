@@ -1,0 +1,20 @@
+@inject IJSRuntime JS
+
+<button class="mute theme-btn" @onclick="Toggle"
+        aria-label="@(_dark ? "Cambiar a tema claro" : "Cambiar a tema oscuro")"
+        title="@(_dark ? "Tema claro" : "Tema oscuro")">@(_dark ? "☀️" : "🌙")</button>
+
+@code {
+    private bool _dark;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try { _dark = await JS.InvokeAsync<string>("pp.effectiveTheme") == "dark"; } catch { }
+    }
+
+    private async Task Toggle()
+    {
+        _dark = !_dark;
+        try { await JS.InvokeVoidAsync("pp.setTheme", _dark ? "dark" : "light"); } catch { }
+    }
+}
