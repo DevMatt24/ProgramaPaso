@@ -24,4 +24,6 @@ builder.Services.AddScoped(_ => new ProgramaPaso.Services.SupabaseOptions
 });
 builder.Services.AddScoped<ProgramaPaso.Services.AuthService>();
 
+builder.Services.AddScoped<ProgramaPaso.Services.GameService>();
+
 await builder.Build().RunAsync();

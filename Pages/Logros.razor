@@ -1,0 +1,85 @@
+@page "/logros"
+@using System.Globalization
+@using ProgramaPaso.Domain
+@using ProgramaPaso.Services
+@inject GameService Game
+
+<PageTitle>Logros · ProgramaPaso</PageTitle>
+
+<div class="screen wide">
+    <header class="q-head">
+        <div class="bar">
+            <a class="back" href="" aria-label="Volver al mapa">‹</a>
+            <span class="brand"><CsLogo Size="26" /> Logros</span>
+            <ThemeToggle />
+        </div>
+        <h1 class="prompt big-title">@_stats.Unlocked.Count de @Achievements.All.Length logros</h1>
+        <p class="sub">Se desbloquean practicando. No hace falta apurarse.</p>
+    </header>
+
+    <div class="q-body">
+        <div class="reward">
+            <div class="rank-row">
+                <span class="rank-icon">@_rank.Icon</span>
+                <div class="rank-info">
+                    <b>@_rank.Name · @_stats.Xp XP</b>
+                    <div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@Ranks.Progress(_stats.Xp)"><span style="width:@(Ranks.Progress(_stats.Xp))%"></span></div>
+                    <small class="muted">@RankHint()</small>
+                </div>
+            </div>
+            <p class="streak-line">🔥 Racha actual: @_streak @(_streak == 1 ? "día" : "días") · Mejor racha: @_stats.BestStreakDays</p>
+            <p class="muted small">Ganás un día de gracia cada 7 días seguidos: si faltás un día, tu racha no se corta.@(_stats.Freezes > 0 ? " Ahora tenés 1 guardado." : "")</p>
+            <div class="ranks">
+                @foreach (var r in Ranks.All)
+                {
+                    <span class="rank-chip @(_stats.Xp >= r.MinXp ? "on" : "")">@r.Icon @r.Name · @r.MinXp</span>
+                }
+            </div>
+        </div>
+
+        <h3 class="review-title">Tus logros</h3>
+        <div class="badges">
+            @foreach (var a in Achievements.All)
+            {
+                var got = _stats.Unlocked.TryGetValue(a.Id, out var date);
+                <div class="badge @(got ? "on" : "off")">
+                    <span class="b-icon" aria-hidden="true">@a.Icon</span>
+                    <b>@a.Name</b>
+                    <small>@a.Description</small>
+                    @if (got)
+                    {
+                        <small class="b-date">Desbloqueado el @Pretty(date)</small>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <footer class="q-foot">
+        <a class="cta" href="">Volver al mapa</a>
+    </footer>
+</div>
+
+@code {
+    private PlayerStats _stats = new();
+    private Rank _rank = Ranks.All[0];
+    private int _streak;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _stats = await Game.GetStatsAsync();
+        _rank = Ranks.For(_stats.Xp);
+        (_streak, _) = await Game.GetStreakAsync();
+    }
+
+    private string RankHint()
+    {
+        var next = Ranks.Next(_stats.Xp);
+        return next is null ? "¡Llegaste al rango máximo!" : $"{_stats.Xp} / {next.MinXp} XP para ser {next.Name}";
+    }
+
+    private static string Pretty(string? iso)
+        => DateOnly.TryParseExact(iso, Streaks.DateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var d)
+            ? d.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+            : "";
+}

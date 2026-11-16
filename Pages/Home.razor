@@ -2,23 +2,30 @@
 @using ProgramaPaso.Domain
 @using ProgramaPaso.Services
 @inject ProgressService Progress
+@inject GameService Game
 @inject AuthService Auth
 @inject NavigationManager Nav
 
-<PageTitle>ProgramaPaso</PageTitle>
+<PageTitle>ProgramaPaso · Aprendé C# jugando</PageTitle>
 
 <div class="screen wide">
     <header class="q-head">
         <div class="bar">
-            <span class="brand">ProgramaPaso</span>
+            <span class="brand"><CsLogo Size="26" /> ProgramaPaso</span>
             <ThemeToggle />
+            <a class="exit" href="logros">🏆 Logros</a>
             @if (Auth.IsLoggedIn)
             {
                 <button class="exit" @onclick="Logout">Salir</button>
             }
         </div>
-        <h1 class="prompt big-title">@(Auth.IsLoggedIn ? $"Hola, {Auth.DisplayName}" : "Aprobá C# practicando de a un paso")</h1>
-        <p class="sub">Preguntas cortas, respuesta al instante y una explicación cuando te equivocás.</p>
+        <div class="hero">
+            <div>
+                <h1 class="prompt big-title">@Title()</h1>
+                <p class="sub">@Subtitle()</p>
+            </div>
+            <CsLogo Size="76" />
+        </div>
     </header>
 
     <div class="q-body home">
@@ -30,6 +37,25 @@
                 <a href="login">Ver qué falta</a>
             </div>
         }
+
+        <a class="stats" href="logros" aria-label="Ver tus logros y tu rango">
+            <div class="stat">
+                <span class="s-icon">@_rank.Icon</span>
+                <b>@_rank.Name</b>
+                <small>@_stats.Xp XP</small>
+            </div>
+            <div class="stat @(_streak > 0 && !_practicedToday ? "warn" : "")">
+                <span class="s-icon">🔥</span>
+                <b>@_streak</b>
+                <small>@(_streak == 1 ? "día de racha" : "días de racha")</small>
+            </div>
+            <div class="stat">
+                <span class="s-icon">🏆</span>
+                <b>@_stats.Unlocked.Count/@Achievements.All.Length</b>
+                <small>logros</small>
+            </div>
+        </a>
+
         @if (_hasData)
         {
             <div class="mastery">
@@ -37,7 +63,7 @@
                 <div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@_ability"><span style="width:@(_ability)%"></span></div>
                 @if (_weak.Count > 0)
                 {
-                    <p class="muted small">Te conviene repasar: @string.Join(", ", _weak). Van a aparecer más seguido en tus quizzes.</p>
+                    <p class="muted small">Para reforzar: @string.Join(", ", _weak). Van a aparecer más seguido en tus quizzes.</p>
                 }
                 else
                 {
@@ -52,20 +78,33 @@
                 var best = _best.GetValueOrDefault(l.Number, -1);
                 var unlocked = l.Available && _unlocked.Contains(l.Number);
                 var cls = !l.Available ? "" : !unlocked ? "locked" : best >= ProgressService.PassMark ? "open done" : "open";
+                var stars = Stars(best);
 
                 <li class="@cls">
                     @if (unlocked)
                     {
                         <a class="row" href="quiz/@l.Number">
-                            <b>@l.Title</b>
-                            <span>@(best >= 0 ? $"Mejor: {best}" : "Disponible")</span>
+                            <div class="zone-icon" aria-hidden="true">@l.Icon</div>
+                            <div class="zone-text"><b>@l.Zone</b><small>@l.Title</small></div>
+                            <div class="zone-state">
+                                @if (best >= 0)
+                                {
+                                    <div class="stars" aria-label="@stars de 3 estrellas"><b>@(new string('★', stars))</b><i>@(new string('☆', 3 - stars))</i></div>
+                                    <small>Mejor: @best</small>
+                                }
+                                else
+                                {
+                                    <small>¡Para explorar!</small>
+                                }
+                            </div>
                         </a>
                     }
                     else
                     {
                         <div class="row">
-                            <b>@l.Title</b>
-                            <span>@(l.Available ? "Bloqueado" : "Pronto")</span>
+                            <div class="zone-icon" aria-hidden="true">@l.Icon</div>
+                            <div class="zone-text"><b>@l.Zone</b><small>@l.Title</small></div>
+                            <div class="zone-state"><small>@(l.Available ? "🔒 Bloqueada" : "Pronto")</small></div>
                         </div>
                     }
                 </li>
@@ -75,7 +114,7 @@
 
     <footer class="q-foot">
         <a class="cta" href="quiz/@_next">@_ctaText</a>
-        <div class="live">Para abrir un nivel, sacá @ProgressService.PassMark o más en el anterior</div>
+        <div class="live">Sacá @ProgressService.PassMark o más para abrir la siguiente zona</div>
     </footer>
 </div>
 
@@ -83,9 +122,11 @@
     private readonly Dictionary<int, int> _best = new();
     private readonly HashSet<int> _unlocked = new();
     private List<string> _weak = new();
-    private int _next = 1, _ability;
-    private bool _hasData;
-    private string _ctaText = "Empezar nivel 1";
+    private PlayerStats _stats = new();
+    private Rank _rank = Ranks.All[0];
+    private int _next = 1, _ability, _streak;
+    private bool _hasData, _practicedToday;
+    private string _ctaText = "Empezar la aventura";
 
     protected override async Task OnInitializedAsync()
     {
@@ -104,14 +145,33 @@
         }
 
         _next = firstPending ?? lastUnlocked;
-        _ctaText = _best.GetValueOrDefault(_next, -1) >= 0
-            ? $"Continuar con el nivel {_next}"
-            : $"Empezar nivel {_next}";
+        var zone = Curriculum.Levels.First(l => l.Number == _next).Zone;
+        _ctaText = _best.GetValueOrDefault(_next, -1) >= 0 ? $"Seguir en {zone}" : "Empezar la aventura";
 
         var mastery = await Progress.GetMasteryAsync();
         _hasData = mastery.Count > 0;
         _ability = (int)Math.Round(await Progress.GetAbilityAsync());
         _weak = mastery.Where(kv => kv.Value < 65).OrderBy(kv => kv.Value).Take(3).Select(kv => kv.Key).ToList();
+
+        _stats = await Game.GetStatsAsync();
+        _rank = Ranks.For(_stats.Xp);
+        (_streak, _practicedToday) = await Game.GetStreakAsync();
+    }
+
+    private static int Stars(int best) => best >= 100 ? 3 : best >= 85 ? 2 : best >= ProgressService.PassMark ? 1 : 0;
+
+    private string Title()
+    {
+        if (Auth.IsLoggedIn) return $"Hola, {Auth.DisplayName}";
+        return _stats.Runs == 0 ? "Aprendé C# jugando" : "Tu expedición C#";
+    }
+
+    private string Subtitle()
+    {
+        if (_stats.Runs == 0) return "Un paso por vez: preguntas cortas, respuesta al instante y una explicación cuando te equivocás.";
+        if (_practicedToday) return "Hoy ya sumaste práctica. ¡Buen trabajo!";
+        if (_streak > 0) return $"Practicá un rato hoy para mantener tu racha de {_streak} {(_streak == 1 ? "día" : "días")}.";
+        return "Practicá un rato hoy y empezá una nueva racha.";
     }
 
     private async Task Logout()

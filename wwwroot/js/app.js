@@ -25,7 +25,9 @@ window.pp = (() => {
         streak: () => [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, i * 0.07, 0.2, 'triangle')),
         wrong:  () => { tone(220, 0, 0.18, 'sawtooth', 0.05); tone(165, 0.12, 0.3, 'sawtooth', 0.05); },
         win:    () => [523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5].forEach((f, i) => tone(f, i * 0.12, 0.28, 'triangle', 0.13)),
-        lose:   () => [392, 349.23, 329.63].forEach((f, i) => tone(f, i * 0.16, 0.32, 'sine', 0.1))
+        lose:   () => [392, 349.23, 329.63].forEach((f, i) => tone(f, i * 0.16, 0.32, 'sine', 0.1)),
+        badge:  () => { [783.99, 987.77, 1318.51].forEach((f, i) => tone(f, i * 0.09, 0.28, 'triangle', 0.11)); tone(1975.53, 0.3, 0.35, 'sine', 0.05); },
+        rank:   () => { [523.25, 659.25, 783.99, 1046.5, 1318.51, 1567.98].forEach((f, i) => tone(f, i * 0.1, 0.4, 'triangle', 0.12)); }
     };
     return {
         play(name) { try { if (!muted() && sounds[name]) sounds[name](); } catch { } },
@@ -34,6 +36,12 @@ window.pp = (() => {
         get(key) { try { return localStorage.getItem(key); } catch { return null; } },
         set(key, value) { try { localStorage.setItem(key, value); } catch { } },
         remove(key) { try { localStorage.removeItem(key); } catch { } },
+        // Fecha de hoy en la zona horaria de la persona (yyyy-MM-dd), para la racha de días
+        today() {
+            const d = new Date();
+            const p = n => String(n).padStart(2, '0');
+            return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+        },
         // Tema claro/oscuro: lo guardado por el usuario, o si no, el del sistema
         effectiveTheme() {
             try {

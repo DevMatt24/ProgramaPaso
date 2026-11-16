@@ -6,6 +6,7 @@
 @inject QuizEngine Engine
 @inject SoundService Sound
 @inject ProgressService Progress
+@inject GameService Game
 @inject CodeRunnerService Runner
 @inject NavigationManager Nav
 
@@ -34,7 +35,7 @@ else if (_result is null)
                 <ThemeToggle />
                 <button class="mute" @onclick="ToggleMute" aria-label="@(_muted ? "Activar sonido" : "Silenciar")">@(_muted ? "🔇" : "🔊")</button>
             </div>
-            <span class="chip">@(q.Level == _level ? $"Nivel {_level}" : $"Repaso · nivel {q.Level}") · @q.Topic</span>
+            <span class="chip">@(_practice ? "Práctica" : q.Level == _level ? $"Nivel {_level}" : $"Repaso · nivel {q.Level}") · @q.Topic</span>
             @if (q.Type != "choice")
             {
                 <span class="chip kind">@KindLabel(q.Type)</span>
@@ -250,23 +251,62 @@ else
     var correct = _result.Answers.Count(a => a.IsCorrect);
     var hintsUsed = _result.Answers.Sum(a => a.HintsUsed);
     var passed = _result.Passed(ProgressService.PassMark);
-    var hasNext = passed && _level < Curriculum.AvailableLevels;
+    var hasNext = !_practice && passed && _level < Curriculum.AvailableLevels;
 
     <div class="screen @(passed ? "hot" : "")">
         <header class="q-head">
             <div class="bar">
                 <a class="back" href="" aria-label="Volver al inicio">‹</a>
-                <span class="brand">Resultado · Nivel @_level</span>
+                <span class="brand">@(_practice ? "Práctica de repaso" : $"Resultado · Nivel {_level}")</span>
                 <ThemeToggle />
             </div>
             <h2 class="prompt">@ResultTitle()</h2>
-            <p class="sub">@correct de @_result.Answers.Count correctas@(hintsUsed > 0 ? $" · pistas usadas: {hintsUsed}" : "")@(_result.Answers.Any(a => a.Question.Type == "code") ? "" : $" · mejor racha: {_bestStreak}")</p>
+            <p class="sub">@correct de @_result.Answers.Count correctas@(hintsUsed > 0 ? $" · pistas usadas: {hintsUsed}" : "")@(_practice ? " · no cambia tu puntaje del nivel" : _result.Answers.Any(a => a.Question.Type == "code") ? "" : $" · mejor racha: {_bestStreak}")</p>
         </header>
 
         <div class="q-body">
             <div class="ring" style="--p:@(_result.Score)">
                 <div class="ring-inner"><span class="big">@_result.Score</span><span class="muted">de 100</span></div>
             </div>
+
+            @if (_summary is not null)
+            {
+                <div class="reward">
+                    <div class="reward-xp">+@_summary.XpGained<span>XP</span></div>
+                    @foreach (var bonus in _summary.Bonuses)
+                    {
+                        <p class="bonus">@bonus</p>
+                    }
+                    <div class="rank-row">
+                        <span class="rank-icon">@_summary.RankAfter.Icon</span>
+                        <div class="rank-info">
+                            <b>@_summary.RankAfter.Name</b>
+                            <div class="meter"><span style="width:@(Ranks.Progress(_summary.TotalXp))%"></span></div>
+                            <small class="muted">@RankHint(_summary)</small>
+                        </div>
+                    </div>
+                    @if (_summary.LeveledUp)
+                    {
+                        <p class="rank-up">🎉 ¡Subiste de rango! Ahora sos @_summary.RankAfter.Name.</p>
+                    }
+                    <p class="streak-line">🔥 Racha: @_summary.StreakDays @(_summary.StreakDays == 1 ? "día" : "días")@(_summary.UsedFreeze ? " · usaste tu día de gracia" : "")</p>
+                </div>
+
+                @if (_summary.NewAchievements.Count > 0)
+                {
+                    <h3 class="review-title">@(_summary.NewAchievements.Count == 1 ? "¡Logro desbloqueado!" : "¡Logros desbloqueados!")</h3>
+                    <div class="badges">
+                        @foreach (var ach in _summary.NewAchievements)
+                        {
+                            <div class="badge on new">
+                                <span class="b-icon" aria-hidden="true">@ach.Icon</span>
+                                <b>@ach.Name</b>
+                                <small>@ach.Description</small>
+                            </div>
+                        }
+                    </div>
+                }
+            }
 
             @if (_result.Mistakes.Any())
             {
@@ -321,15 +361,24 @@ else
         </div>
 
         <footer class="q-foot">
-            @if (hasNext)
+            @if (_practice)
             {
-                <a class="cta" href="quiz/@(_level + 1)">Ir al nivel @(_level + 1)</a>
+                <button class="cta" @onclick="Restart">Volver a intentar el nivel</button>
+                <a class="link-btn" href="">Volver al mapa</a>
+            }
+            else if (hasNext)
+            {
+                <a class="cta" href="quiz/@(_level + 1)">Ir a la siguiente zona</a>
                 <button class="link-btn" @onclick="Restart">Repetir con otras preguntas</button>
             }
             else
             {
                 <button class="cta" @onclick="Restart">Intentar con otras preguntas</button>
-                <div class="live">@(passed ? "Completaste todos los niveles disponibles" : $"Necesitás {ProgressService.PassMark} para pasar de nivel")</div>
+                <div class="live">@(passed ? "¡Completaste todas las zonas disponibles!" : $"Necesitás {ProgressService.PassMark} para abrir la siguiente zona")</div>
+            }
+            @if (!_practice && _result.Mistakes.Any())
+            {
+                <button class="link-btn" @onclick="StartPractice">Practicar lo que fallé (@_result.Mistakes.Count())</button>
             }
         </footer>
     </div>
@@ -353,13 +402,14 @@ else
     private ElementReference _runBox;
     private string _text = "";                       // fill: texto escrito
     private int _level, _index, _pick, _streak, _bestStreak;
-    private bool _answered, _scrollToFeedback, _focusInput, _muted;
+    private bool _answered, _scrollToFeedback, _focusInput, _muted, _practice;
+    private RunSummary? _summary;
     private string _praise = "";
     private QuizResult? _result;
     private ElementReference _feedback, _input;
 
-    private static readonly string[] Praises = { "¡Eso es!", "Muy bien.", "Exacto.", "Bien visto." };
-    private static readonly string[] StreakPraises = { "¡Tres seguidas!", "Estás en racha.", "Esto ya fluye." };
+    private static readonly string[] Praises = { "¡Eso es!", "¡Muy bien!", "Exacto.", "¡Bien pensado!" };
+    private static readonly string[] StreakPraises = { "¡Tres seguidas!", "¡Estás en racha!", "Esto ya fluye.", "¡Imparable!" };
 
     protected override async Task OnParametersSetAsync()
     {
@@ -410,11 +460,36 @@ else
 
         var mastery = await Progress.GetMasteryAsync();
         _quiz = Engine.BuildAdaptiveQuiz(pool, review, mastery, Math.Min(8, pool.Count));
-        _answers = new AnswerResult?[_quiz.Count];
+        _practice = false;
+        ResetRun();
+    }
+
+    private void ResetRun()
+    {
+        _answers = new AnswerResult?[_quiz!.Count];
         _marks = new bool?[_quiz.Count];
         _index = 0; _streak = 0; _bestStreak = 0;
         _result = null;
+        _summary = null;
         PrepareQuestion();
+    }
+
+    // Practicar solo lo que falló en este intento: no cambia el puntaje del nivel
+    private void StartPractice()
+    {
+        if (_result is null) return;
+        var failed = _result.Mistakes.Select(m => m.Question).ToList();
+        if (failed.Count == 0) return;
+
+        _practice = true;
+        _quiz = failed.OrderBy(_ => _rng.Next()).ToList();
+        ResetRun();
+    }
+
+    private static string RankHint(RunSummary s)
+    {
+        var next = Ranks.Next(s.TotalXp);
+        return next is null ? "¡Rango máximo!" : $"{s.TotalXp} / {next.MinXp} XP para ser {next.Name}";
     }
 
     private void PrepareQuestion()
@@ -484,7 +559,7 @@ else
         else
         {
             _streak = 0;
-            _praise = praise ?? "Casi. Mirá por qué:";
+            _praise = praise ?? "Casi. Fijate en esto:";
             await Sound.PlayAsync("wrong");
         }
     }
@@ -632,8 +707,16 @@ else
         }
 
         _result = new QuizResult(_answers.Select(a => a!).ToList());
-        await Progress.RecordAsync(_level, _result);
-        await Sound.PlayAsync(_result.Passed(ProgressService.PassMark) ? "win" : "lose");
+
+        var previousBest = await Progress.GetBestAsync(_level);
+        await Progress.RecordAsync(_level, _result, _practice);
+        var passedLevels = await Progress.PassedLevelsAsync();
+        _summary = await Game.RecordRunAsync(_level, _result, _bestStreak, previousBest, passedLevels, _practice);
+
+        var sound = _summary.LeveledUp ? "rank"
+                  : _summary.NewAchievements.Count > 0 ? "badge"
+                  : _result.Passed(ProgressService.PassMark) ? "win" : "lose";
+        await Sound.PlayAsync(sound);
     }
 
     private async Task ToggleMute()
@@ -652,11 +735,16 @@ else
         return "opt dim";
     }
 
-    private string ResultTitle() => _result!.Score switch
+    private string ResultTitle()
     {
-        >= 90 => $"Dominás el nivel {_level}",
-        >= ProgressService.PassMark => $"Nivel {_level} superado",
-        >= 40 => "Vas por buen camino",
-        _ => "Un repaso más y lo sacás"
-    };
+        if (_practice) return _result!.Score >= ProgressService.PassMark ? "¡Ahora sí te quedó!" : "Cada intento suma";
+
+        return _result!.Score switch
+        {
+            >= 90 => $"¡Dominás el nivel {_level}!",
+            >= ProgressService.PassMark => $"¡Nivel {_level} superado!",
+            >= 40 => "Vas por buen camino",
+            _ => "Todavía no, pero ya sabés por dónde seguir"
+        };
+    }
 }

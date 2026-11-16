@@ -119,22 +119,36 @@ public class ProgressService
 
     // ---------- Escritura ----------
 
-    // Al terminar un intento: actualiza puntaje del nivel, dominio por tema y capacidad general
-    public async Task RecordAsync(int level, QuizResult result)
+    // Cuántos niveles tiene aprobados (70 o más)
+    public async Task<int> PassedLevelsAsync()
+    {
+        await LoadAsync();
+        return _levels.Values.Count(l => l.BestScore >= PassMark);
+    }
+
+    // Al terminar un intento: actualiza puntaje del nivel, dominio por tema y capacidad general.
+    // Si es una práctica de repaso, solo actualiza el dominio por tema (no toca el puntaje del nivel).
+    public async Task RecordAsync(int level, QuizResult result, bool practice = false)
     {
         await LoadAsync();
         var score = result.Score;
         var now = DateTime.UtcNow.ToString("o");
 
-        // Nivel
-        _levels.TryGetValue(level, out var row);
-        row ??= new LevelRow { Level = level };
-        row.UserId = _auth.UserId;
-        row.Attempts++;
-        row.LastScore = score;
-        row.BestScore = Math.Max(row.BestScore, score);
-        row.UpdatedAt = now;
-        _levels[level] = row;
+        // Nivel y capacidad general
+        LevelRow? row = null;
+        if (!practice)
+        {
+            _levels.TryGetValue(level, out row);
+            row ??= new LevelRow { Level = level };
+            row.UserId = _auth.UserId;
+            row.Attempts++;
+            row.LastScore = score;
+            row.BestScore = Math.Max(row.BestScore, score);
+            row.UpdatedAt = now;
+            _levels[level] = row;
+
+            _ability = Math.Clamp(_ability * 0.6 + score * 0.4, 0, 100);
+        }
 
         // Dominio por tema: promedio móvil (lo reciente pesa 30 %)
         var touched = new Dictionary<string, MasteryRow>();
@@ -151,20 +165,17 @@ public class ProgressService
             touched[topic] = m;
         }
 
-        // Capacidad general
-        _ability = Math.Clamp(_ability * 0.6 + score * 0.4, 0, 100);
-
         if (Cloud)
         {
-            await UpsertAsync("level_progress?on_conflict=user_id,level", new[] { row });
+            if (row is not null) await UpsertAsync("level_progress?on_conflict=user_id,level", new[] { row });
             if (touched.Count > 0) await UpsertAsync("topic_mastery?on_conflict=user_id,topic", touched.Values.ToList());
-            await _auth.UpdateAbilityAsync(_ability);
+            if (!practice) await _auth.UpdateAbilityAsync(_ability);
         }
         else
         {
-            await LocalSetAsync($"pp_best_{level}", row.BestScore.ToString());
+            if (row is not null) await LocalSetAsync($"pp_best_{level}", row.BestScore.ToString());
             await LocalSetAsync("pp_mastery", JsonSerializer.Serialize(_mastery.ToDictionary(kv => kv.Key, kv => kv.Value.Mastery)));
-            await LocalSetAsync("pp_ability", _ability.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            if (!practice) await LocalSetAsync("pp_ability", _ability.ToString(System.Globalization.CultureInfo.InvariantCulture));
         }
     }
 
