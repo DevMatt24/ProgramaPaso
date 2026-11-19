@@ -5,67 +5,76 @@
 @inject AuthService Auth
 @inject NavigationManager Nav
 
-<PageTitle>ProgramaPaso</PageTitle>
+<PageTitle>ProgramaPaso · Aprendé C#</PageTitle>
 
 <div class="screen wide">
     <header class="q-head">
-        <div class="bar">
-            <span class="brand">ProgramaPaso</span>
+        <div class="home-top">
+            <div class="avatar" aria-hidden="true">🧑‍💻</div>
+            <div class="home-id">
+                <b>ProgramaPaso</b>
+                <small class="muted">Aprendé C# paso a paso</small>
+            </div>
             <ThemeToggle />
             @if (Auth.IsLoggedIn)
             {
                 <button class="exit" @onclick="Logout">Salir</button>
             }
         </div>
-        <h1 class="prompt big-title">@(Auth.IsLoggedIn ? $"Hola, {Auth.DisplayName}" : "Aprobá C# practicando de a un paso")</h1>
-        <p class="sub">Preguntas cortas, respuesta al instante y una explicación cuando te equivocás.</p>
+
+        <h1 class="prompt big-title">Seguí tu camino</h1>
+        <div class="progress">
+            <div class="track" role="progressbar" aria-label="Avance total" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@_percent">
+                <div class="fill" style="width:@(_percent)%"></div>
+            </div>
+            <b>@_percent%</b>
+        </div>
     </header>
 
     <div class="q-body home">
-        @if (AuthService.LoginEnabled && !Auth.IsConfigured)
-        {
-            <div class="notice">
-                <strong>Modo local: todavía no hay login.</strong>
-                <p>Tu progreso se guarda solo en este navegador. Para activar las cuentas, completá Supabase en <code class="inline">wwwroot/appsettings.json</code>.</p>
-                <a href="login">Ver qué falta</a>
-            </div>
-        }
-        @if (_hasData)
-        {
-            <div class="mastery">
-                <div class="mastery-head"><span>Tu dominio general</span><b>@_ability / 100</b></div>
-                <div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@_ability"><span style="width:@(_ability)%"></span></div>
-                @if (_weak.Count > 0)
-                {
-                    <p class="muted small">Te conviene repasar: @string.Join(", ", _weak). Van a aparecer más seguido en tus quizzes.</p>
-                }
-                else
-                {
-                    <p class="muted small">No tenés temas flojos por ahora. ¡Seguí así!</p>
-                }
-            </div>
-        }
-
-        <ol class="path">
+        <ol class="levels">
             @foreach (var l in Curriculum.Levels)
             {
                 var best = _best.GetValueOrDefault(l.Number, -1);
                 var unlocked = l.Available && _unlocked.Contains(l.Number);
-                var cls = !l.Available ? "" : !unlocked ? "locked" : best >= ProgressService.PassMark ? "open done" : "open";
+                var cls = !unlocked ? "locked" : best >= ProgressService.PassMark ? "open done" : "open";
+                if (unlocked && l.Number == _next) { cls += " current"; }
+                var stars = Stars(best);
 
-                <li class="@cls">
+                <li class="level @cls">
                     @if (unlocked)
                     {
-                        <a class="row" href="quiz/@l.Number">
-                            <b>@l.Title</b>
-                            <span>@(best >= 0 ? $"Mejor: {best}" : "Disponible")</span>
+                        <a class="card" href="quiz/@l.Number">
+                            <div class="icon-box" aria-hidden="true">@l.Icon</div>
+                            <div class="level-main">
+                                <div class="level-name"><span>@l.Name</span><span class="chev" aria-hidden="true">›</span></div>
+                                <p class="level-desc">@l.Title</p>
+                                @if (best >= 0)
+                                {
+                                    <div class="level-meta">
+                                        <span class="level-score">@best pts</span>
+                                        <span class="stars" aria-label="@stars de 3 estrellas">@(new string('★', stars))<i>@(new string('★', 3 - stars))</i></span>
+                                    </div>
+                                }
+                                <div class="mini-row">
+                                    <div class="mini"><span style="width:@(Math.Max(best, 0))%"></span></div>
+                                    <small>@(best >= 0 ? $"{best}/100" : "Sin intentos")</small>
+                                </div>
+                            </div>
                         </a>
                     }
                     else
                     {
-                        <div class="row">
-                            <b>@l.Title</b>
-                            <span>@(l.Available ? "Bloqueado" : "Pronto")</span>
+                        <div class="card">
+                            <div class="icon-box" aria-hidden="true">@l.Icon</div>
+                            <div class="level-main">
+                                <div class="level-name"><span>@l.Name</span><span aria-hidden="true">🔒</span></div>
+                                <p class="level-desc">@l.Title</p>
+                                <div class="mini-row">
+                                    <div class="mini"><span style="width:0%"></span></div>
+                                    <small>@(l.Available ? $"Aprobá {PreviousName(l.Number)} con {ProgressService.PassMark}+" : "Pronto")</small>
+                                </div>
+                            </div>
                         </div>
                     }
                 </li>
@@ -75,26 +84,26 @@
 
     <footer class="q-foot">
         <a class="cta" href="quiz/@_next">@_ctaText</a>
-        <div class="live">Para abrir un nivel, sacá @ProgressService.PassMark o más en el anterior</div>
+        <div class="live">Sacá @ProgressService.PassMark o más para abrir el siguiente nivel</div>
     </footer>
 </div>
 
 @code {
     private readonly Dictionary<int, int> _best = new();
     private readonly HashSet<int> _unlocked = new();
-    private List<string> _weak = new();
-    private int _next = 1, _ability;
-    private bool _hasData;
-    private string _ctaText = "Empezar nivel 1";
+    private int _next = 1, _percent;
+    private string _ctaText = "Empezar";
 
     protected override async Task OnInitializedAsync()
     {
         int? firstPending = null;
-        int lastUnlocked = 1;
+        int lastUnlocked = 1, passed = 0;
 
         for (int n = 1; n <= Curriculum.AvailableLevels; n++)
         {
             _best[n] = await Progress.GetBestAsync(n);
+            if (_best[n] >= ProgressService.PassMark) passed++;
+
             if (await Progress.IsUnlockedAsync(n))
             {
                 _unlocked.Add(n);
@@ -103,16 +112,17 @@
             }
         }
 
+        _percent = (int)Math.Round(passed * 100.0 / Curriculum.AvailableLevels);
         _next = firstPending ?? lastUnlocked;
-        _ctaText = _best.GetValueOrDefault(_next, -1) >= 0
-            ? $"Continuar con el nivel {_next}"
-            : $"Empezar nivel {_next}";
 
-        var mastery = await Progress.GetMasteryAsync();
-        _hasData = mastery.Count > 0;
-        _ability = (int)Math.Round(await Progress.GetAbilityAsync());
-        _weak = mastery.Where(kv => kv.Value < 65).OrderBy(kv => kv.Value).Take(3).Select(kv => kv.Key).ToList();
+        var name = Curriculum.Levels.First(l => l.Number == _next).Name;
+        _ctaText = _best.GetValueOrDefault(_next, -1) >= 0 ? $"Continuar: {name}" : $"Empezar: {name}";
     }
+
+    private static int Stars(int best) => best >= 100 ? 3 : best >= 85 ? 2 : best >= ProgressService.PassMark ? 1 : 0;
+
+    private static string PreviousName(int number)
+        => number > 1 ? Curriculum.Levels[number - 2].Name : "";
 
     private async Task Logout()
     {

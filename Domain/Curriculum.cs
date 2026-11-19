@@ -1,6 +1,7 @@
 namespace ProgramaPaso.Domain;
 
-public record LevelInfo(int Number, string Title, bool Available);
+// Name: nombre corto de la tarjeta · Icon: símbolo de código · Title: qué se practica en ese nivel
+public record LevelInfo(int Number, string Name, string Icon, string Title, bool Available);
 
 public static class Curriculum
 {
@@ -9,14 +10,14 @@ public static class Curriculum
 
     public static readonly LevelInfo[] Levels =
     {
-        new(1, "Variables, constantes, tipos y operadores", true),
-        new(2, "Condicionales: if, else, switch, && y ||", true),
-        new(3, "Repetitivas: for y while", true),
-        new(4, "Contadores, acumuladores y banderas", true),
-        new(5, "Métodos", true),
-        new(6, "Vectores", true),
-        new(7, "Cadenas de caracteres", true),
-        new(8, "Depurar código", true),
-        new(9, "Integrador tipo parcial: corregir y escribir código", true),
+        new(1, "Variables", "x=", "Variables, constantes, tipos y operadores", true),
+        new(2, "Condiciones", "if", "if, else, switch, && y ||", true),
+        new(3, "Bucles", "↻", "for y while", true),
+        new(4, "Contadores", "Σ", "Contadores, acumuladores y banderas", true),
+        new(5, "Métodos", "ƒ()", "Parámetros, retorno y ámbito", true),
+        new(6, "Vectores", "[ ]", "Recorrer, buscar y contar", true),
+        new(7, "Cadenas", "\" \"", "Trim, ToLower, Contains, Substring, Split", true),
+        new(8, "Depuración", "{!}", "Encontrar y corregir errores", true),
+        new(9, "Integrador", "</>", "Corregir y escribir código como en el parcial", true),
     };
 }
